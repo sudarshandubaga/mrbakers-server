@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* Define custom colors and fonts using CSS variables */
+@theme {
+    /* Custom colors */
+    --color-bakery-50: #fdf8f6;
+    --color-bakery-100: #f2e8e5;
+    --color-bakery-200: #eaddd7;
+    --color-bakery-300: #e0cec7;
+    --color-bakery-400: #d2bab0;
+    --color-bakery-500: #a18072;
+    --color-bakery-600: #8a6a5d;
+    --color-bakery-700: #73574d;
+    --color-bakery-800: #5d463e;
+    --color-bakery-900: #483630;
+
+    /* Custom font */
+    --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* Base styles to use the font and other variables */
+@layer base {
+    :root {
+        font-family: var(--font-sans);
+        color-scheme: light;
+    }
+
+    /* Optional: define utility classes for your bakery colors */
+    .bg-bakery-50 {
+        background-color: var(--color-bakery-50);
+    }
+    .bg-bakery-100 {
+        background-color: var(--color-bakery-100);
+    }
+    .bg-bakery-200 {
+        background-color: var(--color-bakery-200);
+    }
+    .bg-bakery-300 {
+        background-color: var(--color-bakery-300);
+    }
+    .bg-bakery-400 {
+        background-color: var(--color-bakery-400);
+    }
+    .bg-bakery-500 {
+        background-color: var(--color-bakery-500);
+    }
+    .bg-bakery-600 {
+        background-color: var(--color-bakery-600);
+    }
+    .bg-bakery-700 {
+        background-color: var(--color-bakery-700);
+    }
+    .bg-bakery-800 {
+        background-color: var(--color-bakery-800);
+    }
+    .bg-bakery-900 {
+        background-color: var(--color-bakery-900);
+    }
+
+    .text-bakery-50 {
+        color: var(--color-bakery-50);
+    }
+    .text-bakery-100 {
+        color: var(--color-bakery-100);
+    }
+    .text-bakery-200 {
+        color: var(--color-bakery-200);
+    }
+    .text-bakery-300 {
+        color: var(--color-bakery-300);
+    }
+    .text-bakery-400 {
+        color: var(--color-bakery-400);
+    }
+    .text-bakery-500 {
+        color: var(--color-bakery-500);
+    }
+    .text-bakery-600 {
+        color: var(--color-bakery-600);
+    }
+    .text-bakery-700 {
+        color: var(--color-bakery-700);
+    }
+    .text-bakery-800 {
+        color: var(--color-bakery-800);
+    }
+    .text-bakery-900 {
+        color: var(--color-bakery-900);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.15s ease-out;
+}
