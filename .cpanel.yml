@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOY_PATH=/home1/rudrarmq/rtportfolios.ml/roade-grocery-website
+    - export DEPLOY_PATH=/home1/rudrarmq/mrbakers.thedemoonline.site
     - /bin/cp -R * $DEPLOY_PATH
