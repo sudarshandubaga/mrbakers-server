@@ -11,6 +11,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+/**
+ * Admin Panel Routes
+ */
 Route::post("/login", [LoginController::class, 'doLogin']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -25,3 +28,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         ]);
     });
 });
+
+/**
+ * Mobile Application Routes
+ */
+Route::post('/send-otp', [LoginController::class, 'send_otp']);
+Route::post('/verify-otp', [LoginController::class, 'verify_otp']);
+Route::post('/sign-up', [LoginController::class, 'sign_up']);
