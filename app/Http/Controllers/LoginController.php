@@ -113,14 +113,6 @@ class LoginController extends Controller
             'name' => 'required|string|regex:/^[a-zA-Z ]+$/',
         ]);
 
-        $user = User::where('phone', $request->phone)->first();
-
-        if ($user) {
-            return response()->json([
-                'message' => 'User already exists'
-            ], 401);
-        }
-
         $user = User::where('phone', $request->phone)->firstOrFail();
         $user->first_name = $request->name;
         $user->save();
