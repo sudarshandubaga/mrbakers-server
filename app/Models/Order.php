@@ -13,7 +13,8 @@ class Order extends Model
         'delivery_fee',
         'total',
         'status',
-        'payment_id'
+        'payment_id',
+        'address_id'
     ];
 
     public function items()

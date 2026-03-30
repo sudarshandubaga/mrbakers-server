@@ -25,7 +25,8 @@ class OrderController extends Controller
             'delivery_fee' => $request->deliveryFee,
             'total' => $request->totalAmount,
             'status' => 'Confirmed',
-            'payment_id' => $request->paymentId
+            'payment_id' => $request->paymentId,
+            'address_id' => $request->address_id
         ]);
 
         foreach($items as $item) {

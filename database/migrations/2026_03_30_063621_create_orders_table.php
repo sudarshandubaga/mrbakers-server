@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->string('status')->default('Confirmed');
             $table->string('payment_id')->nullable();
+            $table->foreignId('address_id')->nullable()->constrained('user_addresses');
             $table->timestamps();
         });
     }

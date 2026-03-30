@@ -49,4 +49,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::post('/place-order', [App\Http\Controllers\Api\OrderController::class, 'placeOrder']);
     Route::get('/order-history', [App\Http\Controllers\Api\OrderController::class, 'history']);
+
+    Route::get('/addresses', [App\Http\Controllers\Api\AddressController::class, 'index']);
+    Route::post('/addresses', [App\Http\Controllers\Api\AddressController::class, 'store']);
+    Route::post('/addresses/{id}/primary', [App\Http\Controllers\Api\AddressController::class, 'setPrimary']);
 });
