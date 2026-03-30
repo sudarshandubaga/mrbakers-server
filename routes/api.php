@@ -46,4 +46,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResources([
         'wishlist' => WishlistController::class
     ]);
+
+    Route::post('/place-order', [App\Http\Controllers\Api\OrderController::class, 'placeOrder']);
+    Route::get('/order-history', [App\Http\Controllers\Api\OrderController::class, 'history']);
 });

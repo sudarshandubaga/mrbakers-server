@@ -11,8 +11,12 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('otp')->after('password')->nullable()->default(null);
-            $table->timestamp('otp_expires_at')->after('otp')->nullable()->default(null);
+            if (!Schema::hasColumn('users', 'otp')) {
+                $table->integer('otp')->after('password')->nullable()->default(null);
+            }
+            if (!Schema::hasColumn('users', 'otp_expires_at')) {
+                $table->timestamp('otp_expires_at')->after('otp')->nullable()->default(null);
+            }
         });
     }
 
