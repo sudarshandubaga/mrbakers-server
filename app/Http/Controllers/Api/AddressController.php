@@ -39,6 +39,8 @@ class AddressController extends Controller
             'landmark' => $request->landmark,
             'city' => $request->city,
             'pincode' => $request->pincode,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'is_primary' => $request->is_primary ?? false
         ]);
 

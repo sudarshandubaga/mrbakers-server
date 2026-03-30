@@ -14,6 +14,8 @@ class UserAddress extends Model
         'city',
         'state_id',
         'pincode',
+        'latitude',
+        'longitude',
         'is_primary',
         'user_id'
     ];

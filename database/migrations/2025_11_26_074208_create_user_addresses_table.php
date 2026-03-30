@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,7 +18,9 @@ return new class extends Migration
             $table->string('landmark')->nullable();
             $table->foreignId('state_id')->nullable()->constrained()->onDelete('SET NULL');
             $table->string("city");
-            $table->decimal("pincode", 6);
+            $table->string("pincode", 6);
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->boolean('is_primary')->default(false);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
