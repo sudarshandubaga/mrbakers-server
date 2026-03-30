@@ -33,6 +33,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 Route::post('/send-otp', [LoginController::class, 'send_otp']);
 Route::post('/verify-otp', [LoginController::class, 'verify_otp']);
 Route::post('/sign-up', [LoginController::class, 'sign_up']);
+Route::get('/razorpay-keys', function () {
+    return response()->json([
+        'rp_key' => env('RAZORPAY_KEY'),
+        'rp_key_secret' => env('RAZORPAY_SECRET')
+    ]);
+});
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/home', [HomeController::class, 'index']);
