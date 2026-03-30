@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
-import { User } from "../types";
+import { User } from "../../types";
 import {
     LayoutDashboard,
     ShoppingBag,
@@ -14,7 +14,7 @@ import {
     User as UserIcon,
     Lock,
 } from "lucide-react";
-import { SITE_INFO } from "@/utils/constants.utils";
+import { SITE_INFO } from "../utils/constants.utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
@@ -133,7 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
                             <button
                                 onClick={() =>
                                     handleDropdownNavigation(
-                                        "/profile/password"
+                                        "/profile/password",
                                     )
                                 }
                                 className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"

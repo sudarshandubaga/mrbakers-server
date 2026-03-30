@@ -1,4 +1,8 @@
 {
+  "_client-CftnEclB.js": {
+    "file": "assets/client-CftnEclB.js",
+    "name": "client"
+  },
   "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm": {
     "file": "assets/ort-wasm-simd-threaded.jsep-D5Jk56-t.wasm",
     "src": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm"
@@ -23,17 +27,38 @@
       "assets/ort-wasm-simd-threaded.jsep-D5Jk56-t.wasm"
     ]
   },
+  "resources/css/app.css": {
+    "file": "assets/app-CNIXdd8h.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
   "resources/js/index.tsx": {
-    "file": "assets/index-CptUe3Kl.js",
+    "file": "assets/index-DWCoq9br.js",
     "name": "index",
     "src": "resources/js/index.tsx",
     "isEntry": true,
+    "imports": [
+      "_client-CftnEclB.js"
+    ]
+  },
+  "resources/js/mrbakers-admin-router.tsx": {
+    "file": "assets/mrbakers-admin-router-D5h8j5Gv.js",
+    "name": "mrbakers-admin-router",
+    "src": "resources/js/mrbakers-admin-router.tsx",
+    "isEntry": true,
+    "imports": [
+      "_client-CftnEclB.js"
+    ],
     "dynamicImports": [
       "node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs",
       "node_modules/onnxruntime-web/dist/ort.bundle.min.mjs"
     ],
     "css": [
-      "assets/index-GwFyg9pg.css"
+      "assets/app-CNIXdd8h.css"
     ]
   }
 }

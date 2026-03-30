@@ -14,7 +14,7 @@ class CartController extends Controller
      */
     public function index(Request $request)
     {
-        $cart = Cart::where('user_id', $request()->user()->id)
+        $cart = Cart::where('user_id', $request->user()->id)
             ->with(['product', 'variant'])
             ->get();
 
@@ -33,7 +33,7 @@ class CartController extends Controller
         ]);
 
         // Check if item already exists (same product + variant)
-        $existing = Cart::where('user_id', $request()->user()->id)
+        $existing = Cart::where('user_id', $request->user()->id)
             ->where('product_id', $validated['product_id'])
             ->where('product_variant_id', $validated['product_variant_id'])
             ->first();
@@ -49,7 +49,7 @@ class CartController extends Controller
             ], 200);
         }
 
-        $validated['user_id'] = $request()->user()->id;
+        $validated['user_id'] = $request->user()->id;
 
         $cart = Cart::create($validated);
 
@@ -66,7 +66,7 @@ class CartController extends Controller
     public function show(Request $request, Cart $cart)
     {
         // Restrict user access
-        if ($cart->user_id !== $request()->user()->id) {
+        if ($cart->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -83,7 +83,7 @@ class CartController extends Controller
      */
     public function update(Request $request, Cart $cart)
     {
-        if ($cart->user_id !== $request()->user()->id) {
+        if ($cart->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -105,7 +105,7 @@ class CartController extends Controller
      */
     public function destroy(Request $request, Cart $cart)
     {
-        if ($cart->user_id !== $request()->user()->id) {
+        if ($cart->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

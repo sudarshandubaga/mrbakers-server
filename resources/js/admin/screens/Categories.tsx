@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Trash2, Edit2, Tag } from "lucide-react";
-import callApi from "@/services";
+import callApi from "../services/index";
 import { toast } from "react-toastify";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -34,7 +34,7 @@ export const Categories: React.FC = () => {
     const handleDelete = async (slug: string) => {
         if (
             confirm(
-                "Are you sure? This might affect products using this category."
+                "Are you sure? This might affect products using this category.",
             )
         ) {
             try {
@@ -62,13 +62,13 @@ export const Categories: React.FC = () => {
                             ...values,
                             _method: "PUT",
                         },
-                    }
+                    },
                 );
 
                 setCategories((prev) =>
                     prev.map((c) =>
-                        c.slug === isEditing ? updatedCategory.data : c
-                    )
+                        c.slug === isEditing ? updatedCategory.data : c,
+                    ),
                 );
 
                 toast.success(updatedCategory.message);

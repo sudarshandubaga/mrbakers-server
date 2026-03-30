@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Product, ProductVariant } from "../types";
+import { Product, ProductVariant } from "../../types";
 import { Plus, Edit2, Trash2, Search, Layers, X, Percent } from "lucide-react";
-import callApi from "@/services";
+import callApi from "../services/index";
 import { toast } from "react-toastify";
 import AddProduct from "./AddProduct";
 
@@ -142,8 +142,9 @@ export const Products: React.FC = () => {
                                                     ₹
                                                     {Math.min(
                                                         ...product.variants.map(
-                                                            (v) => v.trade_price
-                                                        )
+                                                            (v) =>
+                                                                v.trade_price,
+                                                        ),
                                                     )}
                                                     <span className="text-gray-400 mx-1">
                                                         -
@@ -151,8 +152,9 @@ export const Products: React.FC = () => {
                                                     ₹
                                                     {Math.max(
                                                         ...product.variants.map(
-                                                            (v) => v.trade_price
-                                                        )
+                                                            (v) =>
+                                                                v.trade_price,
+                                                        ),
                                                     )}
                                                 </span>
                                             ) : (

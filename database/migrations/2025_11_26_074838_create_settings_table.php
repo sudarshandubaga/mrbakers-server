@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('Store Name');
-            $table->string('App Version');
+            $table->string('store_name');
+            $table->string('app_version');
             $table->string('email');
             $table->string('phone');
             $table->timestamps();

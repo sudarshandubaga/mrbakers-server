@@ -8,8 +8,8 @@ import {
     Phone,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { doLogin } from "@/redux/actions/authAction";
-import { AppDispatch } from "@/redux/store";
+import { doLogin } from "../redux/actions/authAction";
+import { AppDispatch } from "../redux/store";
 import { toast } from "react-toastify";
 
 export const Auth: React.FC = () => {

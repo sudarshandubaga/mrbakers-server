@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
@@ -17,9 +18,6 @@ Route::get('/user', function (Request $request) {
 Route::post("/login", [LoginController::class, 'doLogin']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    // App Routes
-    Route::get("/home", [HomeController::class, 'index']);
-
     // Admin Routes
     Route::group(['prefix' => 'admin'], function () {
         Route::apiResources([
@@ -35,3 +33,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 Route::post('/send-otp', [LoginController::class, 'send_otp']);
 Route::post('/verify-otp', [LoginController::class, 'verify_otp']);
 Route::post('/sign-up', [LoginController::class, 'sign_up']);
+
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/home', [HomeController::class, 'index']);
+
+    Route::apiResources([
+        'wishlist' => WishlistController::class
+    ]);
+});

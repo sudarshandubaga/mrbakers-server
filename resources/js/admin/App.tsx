@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 
 // Import Styles
-import "../css/app.css";
+import "../../css/app.css";
 
 import { Sidebar } from "./screens/Sidebar";
 import { Dashboard } from "./screens/Dashboard";
@@ -25,7 +25,7 @@ import FullScreenLoading from "./components/FullScreenLoading";
 
 function InitApp() {
     const { isAuthenticated, user } = useSelector(
-        (state: RootState) => state.auth
+        (state: RootState) => state.auth,
     );
 
     const [isAppLoaded, setIsAppLoaded] = useState(false);
@@ -47,7 +47,7 @@ function InitApp() {
     if (!isAuthenticated) return <Auth />;
 
     return (
-        <Router>
+        <Router basename="/mrbakers-admin">
             <div className="min-h-screen bg-[#f9fafb]">
                 {/* Mobile Header */}
                 <div className="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200 sticky top-0 z-30">

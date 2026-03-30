@@ -1,4 +1,4 @@
-import callApi from "@/services";
+import callApi from "../../services";
 import { AppDispatch } from "recharts/types/state/store";
 
 export const doLogin =

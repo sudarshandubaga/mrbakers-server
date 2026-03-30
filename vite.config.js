@@ -6,7 +6,11 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
     plugins: [
         laravel({
-            input: ["resources/js/index.tsx"],
+            input: [
+                "resources/css/app.css",
+                "resources/js/index.tsx",
+                "resources/js/mrbakers-admin-router.tsx",
+            ],
             refresh: true,
         }),
         tailwindcss(),

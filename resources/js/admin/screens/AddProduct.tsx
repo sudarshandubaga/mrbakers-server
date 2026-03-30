@@ -1,7 +1,7 @@
-import FormSelect from "@/components/FormSelect";
-import ImagePicker from "@/components/ImagePicker";
-import callApi from "@/services";
-import { Product, ProductVariant } from "@/types";
+import FormSelect from "../components/FormSelect";
+import ImagePicker from "../components/ImagePicker";
+import callApi from "../services/index";
+import { Product, ProductVariant } from "../../types";
 import { Layers, Percent, Plus, X } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -28,7 +28,7 @@ export default function AddProduct({
     });
 
     const [hasVariants, setHasVariants] = useState(
-        editingProduct?.variants?.length || false
+        editingProduct?.variants?.length || false,
     );
 
     // Variant Helpers
@@ -56,13 +56,13 @@ export default function AddProduct({
     const updateVariant = (
         id: string,
         field: keyof ProductVariant,
-        value: any
+        value: any,
     ) => {
         setFormData((prev) => ({
             ...prev,
             variants:
                 prev.variants?.map((v) =>
-                    v.id === id ? { ...v, [field]: value } : v
+                    v.id === id ? { ...v, [field]: value } : v,
                 ) || [],
         }));
     };
@@ -102,12 +102,12 @@ export default function AddProduct({
                 const res = await callApi(
                     `admin/product/${editingProduct.slug}`,
                     "PUT",
-                    { data: payload }
+                    { data: payload },
                 );
                 setProducts((prev) => ({
                     ...prev,
                     data: prev.data.map((p) =>
-                        p.id === res.data.id ? res.data : p
+                        p.id === res.data.id ? res.data : p,
                     ),
                 }));
             } else {
@@ -135,7 +135,7 @@ export default function AddProduct({
                 !!(
                     editingProduct.variants &&
                     editingProduct.variants.length > 0
-                )
+                ),
             );
         } else {
             setHasVariants(false);
@@ -242,7 +242,7 @@ export default function AddProduct({
                                             setFormData({
                                                 ...formData,
                                                 gst_rate: parseFloat(
-                                                    e.target.value
+                                                    e.target.value,
                                                 ),
                                             })
                                         }
@@ -292,7 +292,7 @@ export default function AddProduct({
                                                 setFormData({
                                                     ...formData,
                                                     regular_price: parseFloat(
-                                                        e.target.value
+                                                        e.target.value,
                                                     ),
                                                 })
                                             }
@@ -313,7 +313,7 @@ export default function AddProduct({
                                                 setFormData({
                                                     ...formData,
                                                     trade_price: parseFloat(
-                                                        e.target.value
+                                                        e.target.value,
                                                     ),
                                                 })
                                             }
@@ -410,7 +410,7 @@ export default function AddProduct({
                                                     updateVariant(
                                                         variant.id,
                                                         "name",
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-bakery-500 focus:ring-1 focus:ring-bakery-500 outline-none"
@@ -431,8 +431,8 @@ export default function AddProduct({
                                                         variant.id,
                                                         "regular_price",
                                                         parseFloat(
-                                                            e.target.value
-                                                        )
+                                                            e.target.value,
+                                                        ),
                                                     )
                                                 }
                                                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-bakery-500 focus:ring-1 focus:ring-bakery-500 outline-none"
@@ -453,8 +453,8 @@ export default function AddProduct({
                                                         variant.id,
                                                         "trade_price",
                                                         parseFloat(
-                                                            e.target.value
-                                                        )
+                                                            e.target.value,
+                                                        ),
                                                     )
                                                 }
                                                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-bakery-500 focus:ring-1 focus:ring-bakery-500 outline-none"

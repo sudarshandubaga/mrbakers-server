@@ -1,11 +1,11 @@
 import axios from "axios";
-import { API_BASE } from "@/utils/constants.utils";
+import { API_BASE } from "../utils/constants.utils";
 import { toast } from "react-toastify";
 
 export default async function callApi(
     url: string,
     method: string = "GET",
-    params: any = {}
+    params: any = {},
 ) {
     const data = params.data || null;
     const isGuest = params.is_guest || false;

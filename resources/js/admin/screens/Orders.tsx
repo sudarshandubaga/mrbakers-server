@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Order, OrderStatus } from "../types";
+import { Order, OrderStatus } from "../../types";
 import { Clock, CheckCircle2, Truck, Package, XCircle } from "lucide-react";
 import { INITIAL_ORDERS } from "@/constants";
 
@@ -9,8 +9,8 @@ export const Orders: React.FC = () => {
     const updateStatus = (orderId: string, newStatus: OrderStatus) => {
         setOrders((prev) =>
             prev.map((o) =>
-                o.id === orderId ? { ...o, status: newStatus } : o
-            )
+                o.id === orderId ? { ...o, status: newStatus } : o,
+            ),
         );
     };
 
@@ -91,7 +91,7 @@ export const Orders: React.FC = () => {
                             </div>
                             <div
                                 className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5 ${getStatusColor(
-                                    order.status
+                                    order.status,
                                 )}`}
                             >
                                 {getStatusIcon(order.status)}
@@ -116,7 +116,7 @@ export const Orders: React.FC = () => {
                                     <span className="text-gray-900 font-medium">
                                         ₹
                                         {(item.price * item.quantity).toFixed(
-                                            2
+                                            2,
                                         )}
                                     </span>
                                 </div>
@@ -134,7 +134,7 @@ export const Orders: React.FC = () => {
                                         onClick={() =>
                                             updateStatus(
                                                 order.id,
-                                                OrderStatus.CANCELLED
+                                                OrderStatus.CANCELLED,
                                             )
                                         }
                                         className="w-full py-2 px-4 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-sm font-medium transition-colors"
@@ -145,7 +145,7 @@ export const Orders: React.FC = () => {
                                         onClick={() =>
                                             updateStatus(
                                                 order.id,
-                                                OrderStatus.PREPARING
+                                                OrderStatus.PREPARING,
                                             )
                                         }
                                         className="w-full py-2 px-4 rounded-lg bg-bakery-600 text-white hover:bg-bakery-700 text-sm font-medium shadow-sm transition-colors"
@@ -159,7 +159,7 @@ export const Orders: React.FC = () => {
                                     onClick={() =>
                                         updateStatus(
                                             order.id,
-                                            OrderStatus.READY
+                                            OrderStatus.READY,
                                         )
                                     }
                                     className="col-span-2 w-full py-2 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium shadow-sm transition-colors"
@@ -172,7 +172,7 @@ export const Orders: React.FC = () => {
                                     onClick={() =>
                                         updateStatus(
                                             order.id,
-                                            OrderStatus.DELIVERED
+                                            OrderStatus.DELIVERED,
                                         )
                                     }
                                     className="col-span-2 w-full py-2 px-4 rounded-lg bg-green-600 text-white hover:bg-green-700 text-sm font-medium shadow-sm transition-colors"

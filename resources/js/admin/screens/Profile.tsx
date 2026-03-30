@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User } from "../types";
+import { User } from "../../types";
 import { Camera, User as UserIcon, Lock, Save, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -12,7 +12,7 @@ export const Profile: React.FC<ProfileProps> = ({ view }) => {
     const { user } = useSelector((state: RootState) => state.auth);
 
     const [activeTab, setActiveTab] = useState<"profile" | "security">(
-        view === "EDIT_PROFILE" ? "profile" : "security"
+        view === "EDIT_PROFILE" ? "profile" : "security",
     );
     const [isSaving, setIsSaving] = useState(false);
 

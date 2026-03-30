@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { IndianRupee, ShoppingBag, Users, Clock, Sparkles } from "lucide-react";
 import { StatsCard } from "./StatsCard";
-import { Order, OrderStatus } from "../types";
+import { Order, OrderStatus } from "../../types";
 import { generateDashboardInsights } from "../services/geminiService";
 import { INITIAL_ORDERS } from "@/constants";
 
@@ -38,7 +38,7 @@ const COLORS = ["#8a6a5d", "#a18072", "#d2bab0", "#e0cec7"];
 
 export const Dashboard: React.FC = () => {
     const [insight, setInsight] = useState<string>(
-        "Analyzing your bakery data..."
+        "Analyzing your bakery data...",
     );
     const [loadingInsight, setLoadingInsight] = useState(false);
 
@@ -47,10 +47,10 @@ export const Dashboard: React.FC = () => {
     // Calculate stats
     const totalSales = orders.reduce((acc, order) => acc + order.total, 0);
     const pendingOrders = orders.filter(
-        (o) => o.status === OrderStatus.PENDING
+        (o) => o.status === OrderStatus.PENDING,
     ).length;
     const completedOrders = orders.filter(
-        (o) => o.status === OrderStatus.DELIVERED
+        (o) => o.status === OrderStatus.DELIVERED,
     ).length;
 
     useEffect(() => {
@@ -59,7 +59,7 @@ export const Dashboard: React.FC = () => {
             setLoadingInsight(true);
             const result = await generateDashboardInsights(
                 DAILY_DATA,
-                pendingOrders
+                pendingOrders,
             );
             if (mounted) {
                 setInsight(result);
