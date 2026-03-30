@@ -53,7 +53,7 @@ class OrderController extends Controller
         $orders = Order::with('items')->where('user_id', $user->id)->orderBy('id', 'desc')->get()->map(function($order) {
             return [
                 'id' => $order->order_number,
-                'date' => $order->created_at->format('Y-m-d'),
+                'date' => $order->created_at->format('j F Y'),
                 'total' => $order->total,
                 'subtotal' => $order->subtotal,
                 'deliveryFee' => $order->delivery_fee,
