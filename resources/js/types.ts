@@ -55,6 +55,7 @@ export interface Product {
     stock: number; // Represents total stock across variants
     gst_rate: number; // GST Tax Rate in percentage
     main_image: string;
+    is_bestseller?: boolean;
     ingredients?: string[];
     variants?: ProductVariant[];
 }

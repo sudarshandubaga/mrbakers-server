@@ -13,9 +13,19 @@ class ProductController extends Controller
     /**
      * GET /products
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['variants', 'category'])->latest()->paginate(10);
+        $query = Product::with(['variants', 'category']);
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $products = $query->latest()->paginate(10);
 
         return response()->json($products->toArray());
     }
@@ -75,6 +85,7 @@ class ProductController extends Controller
             "main_image"    => dataUriToImage($request->main_image, "products"),
             "description"   => $request->description,
             "has_variants"  => $request->has_variants ?? false,
+            "is_bestseller" => $request->is_bestseller ?? false,
         ]);
 
         if ($product->has_variants) {
@@ -167,6 +178,7 @@ class ProductController extends Controller
             "trade_price"   => $minTrade,
             "description"   => $request->description,
             "has_variants"  => $request->has_variants ?? false,
+            "is_bestseller" => $request->is_bestseller ?? false,
         ];
 
         // If a new base64 image is sent → replace

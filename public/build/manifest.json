@@ -28,7 +28,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-CNIXdd8h.css",
+    "file": "assets/app-CXn9WtVn.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -46,7 +46,7 @@
     ]
   },
   "resources/js/mrbakers-admin-router.tsx": {
-    "file": "assets/mrbakers-admin-router-D5h8j5Gv.js",
+    "file": "assets/mrbakers-admin-router-CLbM5GIc.js",
     "name": "mrbakers-admin-router",
     "src": "resources/js/mrbakers-admin-router.tsx",
     "isEntry": true,
@@ -58,7 +58,7 @@
       "node_modules/onnxruntime-web/dist/ort.bundle.min.mjs"
     ],
     "css": [
-      "assets/app-CNIXdd8h.css"
+      "assets/app-CXn9WtVn.css"
     ]
   }
 }

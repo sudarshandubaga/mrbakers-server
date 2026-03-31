@@ -1,6 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Product, ProductVariant } from "../../types";
-import { Plus, Edit2, Trash2, Search, Layers, X, Percent } from "lucide-react";
+import { Product } from "../../types";
+import {
+    Plus,
+    Edit2,
+    Trash2,
+    Search,
+    Star,
+    ChevronLeft,
+    ChevronRight,
+    Filter,
+} from "lucide-react";
 import callApi from "../services/index";
 import { toast } from "react-toastify";
 import AddProduct from "./AddProduct";
@@ -9,6 +18,9 @@ export const Products: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [categories, setCategories] = useState<any[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [products, setProducts] = useState<any>({});
 
@@ -24,6 +36,7 @@ export const Products: React.FC = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingProduct(null);
+        fetchProducts();
     };
 
     const handleDelete = async (slug: string) => {
@@ -44,20 +57,63 @@ export const Products: React.FC = () => {
         }
     };
 
-    const filteredProducts = products;
-
     const fetchProducts = useCallback(async () => {
         try {
-            let res = await callApi(`admin/product?search=${searchTerm}`);
+            const params = new URLSearchParams();
+            if (searchTerm) params.set("search", searchTerm);
+            if (selectedCategory) params.set("category_id", selectedCategory);
+            params.set("page", currentPage.toString());
+
+            let res = await callApi(`admin/product?${params.toString()}`);
             setProducts(res);
         } catch (error) {
             toast.error("Product fetch error: " + error);
         }
+    }, [searchTerm, selectedCategory, currentPage]);
+
+    const fetchCategories = useCallback(async () => {
+        try {
+            let res = await callApi("admin/category");
+            setCategories(res || []);
+        } catch (error) {
+            console.log("Category fetch error:", error);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories]);
 
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, selectedCategory]);
+
+    const totalPages = products?.last_page || 1;
+
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push("...");
+            for (
+                let i = Math.max(2, currentPage - 1);
+                i <= Math.min(totalPages - 1, currentPage + 1);
+                i++
+            ) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push("...");
+            pages.push(totalPages);
+        }
+        return pages;
+    };
 
     return (
         <div className="space-y-6">
@@ -75,7 +131,9 @@ export const Products: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 flex items-center gap-3">
+                {/* Filters Bar */}
+                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    {/* Search */}
                     <div className="relative flex-1 max-w-md">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
@@ -86,6 +144,33 @@ export const Products: React.FC = () => {
                             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 transition-all"
                         />
                     </div>
+
+                    {/* Category Filter */}
+                    <div className="relative">
+                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) =>
+                                setSelectedCategory(e.target.value)
+                            }
+                            className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 transition-all appearance-none cursor-pointer min-w-[180px]"
+                        >
+                            <option value="">All Categories</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Results count */}
+                    {products?.total !== undefined && (
+                        <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {products.total} product
+                            {products.total !== 1 ? "s" : ""}
+                        </span>
+                    )}
                 </div>
 
                 {products?.data?.length ? (
@@ -116,8 +201,17 @@ export const Products: React.FC = () => {
                                                     className="w-10 h-10 rounded-lg object-cover bg-gray-100"
                                                 />
                                                 <div>
-                                                    <div className="font-medium text-gray-900">
+                                                    <div className="font-medium text-gray-900 flex items-center gap-1.5">
                                                         {product.name}
+                                                        {product.is_bestseller && (
+                                                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                                                                <Star
+                                                                    size={10}
+                                                                    className="fill-amber-500 text-amber-500"
+                                                                />
+                                                                Bestseller
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <div className="text-xs text-gray-500 truncate max-w-[200px]">
                                                         {product.description}
@@ -186,6 +280,65 @@ export const Products: React.FC = () => {
                     </div>
                 ) : (
                     <div className="p-5 text-gray-500">No products found.</div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="text-sm text-gray-500">
+                            Showing {products?.from || 0} to{" "}
+                            {products?.to || 0} of {products?.total || 0}{" "}
+                            products
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() =>
+                                    setCurrentPage((p) => Math.max(1, p - 1))
+                                }
+                                disabled={currentPage === 1}
+                                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <ChevronLeft size={16} />
+                            </button>
+
+                            {getPageNumbers().map((page, idx) =>
+                                page === "..." ? (
+                                    <span
+                                        key={`dots-${idx}`}
+                                        className="px-2 text-gray-400"
+                                    >
+                                        ...
+                                    </span>
+                                ) : (
+                                    <button
+                                        key={page}
+                                        onClick={() =>
+                                            setCurrentPage(page as number)
+                                        }
+                                        className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
+                                            currentPage === page
+                                                ? "bg-bakery-600 text-white shadow-sm"
+                                                : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                                        }`}
+                                    >
+                                        {page}
+                                    </button>
+                                ),
+                            )}
+
+                            <button
+                                onClick={() =>
+                                    setCurrentPage((p) =>
+                                        Math.min(totalPages, p + 1),
+                                    )
+                                }
+                                disabled={currentPage === totalPages}
+                                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <ChevronRight size={16} />
+                            </button>
+                        </div>
+                    </div>
                 )}
             </div>
 

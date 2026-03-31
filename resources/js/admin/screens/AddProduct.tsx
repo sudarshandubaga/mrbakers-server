@@ -2,7 +2,7 @@ import FormSelect from "../components/FormSelect";
 import ImagePicker from "../components/ImagePicker";
 import callApi from "../services/index";
 import { Product, ProductVariant } from "../../types";
-import { Layers, Percent, Plus, X } from "lucide-react";
+import { Layers, Percent, Plus, Star, X } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -25,6 +25,7 @@ export default function AddProduct({
         ingredients: [],
         main_image: null,
         variants: [],
+        is_bestseller: false,
     });
 
     const [hasVariants, setHasVariants] = useState(
@@ -80,6 +81,7 @@ export default function AddProduct({
             description: formData.description || null,
             gst_rate: formData.gst_rate,
             category_id: formData.category_id || null,
+            is_bestseller: formData.is_bestseller || false,
         };
 
         if (hasVariants) {
@@ -150,6 +152,7 @@ export default function AddProduct({
                 ingredients: [],
                 main_image: null,
                 variants: [],
+                is_bestseller: false,
             });
         }
     }, [editingProduct]);
@@ -272,6 +275,44 @@ export default function AddProduct({
                                 <span className="text-sm font-medium text-gray-700">
                                     This product has variants (Size, Weight,
                                     etc.)
+                                </span>
+                            </div>
+
+                            {/* Bestseller Toggle */}
+                            <div className="flex items-center gap-2 py-2">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setFormData({
+                                            ...formData,
+                                            is_bestseller:
+                                                !formData.is_bestseller,
+                                        })
+                                    }
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                        formData.is_bestseller
+                                            ? "bg-amber-500"
+                                            : "bg-gray-200"
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                                            formData.is_bestseller
+                                                ? "translate-x-6"
+                                                : "translate-x-1"
+                                        }`}
+                                    />
+                                </button>
+                                <Star
+                                    size={16}
+                                    className={`${
+                                        formData.is_bestseller
+                                            ? "text-amber-500 fill-amber-500"
+                                            : "text-gray-400"
+                                    }`}
+                                />
+                                <span className="text-sm font-medium text-gray-700">
+                                    Mark as Bestseller
                                 </span>
                             </div>
 
