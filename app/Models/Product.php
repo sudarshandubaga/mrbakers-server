@@ -19,6 +19,8 @@ class Product extends Model
         'description',
         'is_bestseller'
     ];
+    
+    protected $appends = ['in_wishlist', 'cart_qty'];
 
     public function getRouteKeyName()
     {

@@ -159,17 +159,17 @@ export const Categories: React.FC = () => {
                                     >
                                         <option value="category">Default (Category)</option>
                                         <option value="cake">Cake</option>
-                                        <option value="bakery_dining">Bakery</option>
+                                        <option value="bakery-dining">Bakery</option>
                                         <option value="icecream">Ice Cream</option>
                                         <option value="restaurant">Restaurant</option>
-                                        <option value="local_pizza">Pizza</option>
+                                        <option value="local-pizza">Pizza</option>
                                         <option value="cookie">Cookie</option>
-                                        <option value="breakfast_dining">Breakfast</option>
-                                        <option value="lunch_dining">Lunch</option>
-                                        <option value="dinner_dining">Dinner</option>
+                                        <option value="breakfast-dining">Breakfast</option>
+                                        <option value="lunch-dining">Lunch</option>
+                                        <option value="dinner-dining">Dinner</option>
                                         <option value="fastfood">Fast Food</option>
                                         <option value="coffee">Coffee</option>
-                                        <option value="local_bar">Bar/Drinks</option>
+                                        <option value="local-bar">Bar/Drinks</option>
                                         <option value="celebration">Celebration/Party</option>
                                         <option value="redeem">Gift/Boxes</option>
                                     </Field>

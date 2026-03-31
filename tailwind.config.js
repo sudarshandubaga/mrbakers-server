@@ -9,7 +9,7 @@ export default {
     theme: {
         extend: {
             colors: {
-                "bakery-brown": {
+                "bakery": {
                     50: "#fdf8f6",
                     100: "#f2e8e5",
                     200: "#eaddd7",

@@ -47,6 +47,7 @@ class HomeController extends Controller
                             ? $product->trade_price
                             : $product->regular_price,
                         'image' => $product->main_image,
+                        'in_wishlist' => $product->in_wishlist,
                         'variants' => $product->variants->map(function ($variant) {
                             return [
                                 'id' => $variant->id,

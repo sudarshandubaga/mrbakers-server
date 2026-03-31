@@ -91,4 +91,38 @@ class WishlistController extends Controller
             'message' => 'Removed from wishlist'
         ]);
     }
+
+    /**
+     * Toggle product in wishlist.
+     */
+    public function toggle(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        $item = Wishlist::where('user_id', Auth::id())
+            ->where('product_id', $validated['product_id'])
+            ->first();
+
+        if ($item) {
+            $item->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Removed from wishlist',
+                'in_wishlist' => false
+            ]);
+        }
+
+        Wishlist::create([
+            'user_id' => Auth::id(),
+            'product_id' => $validated['product_id']
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Added to wishlist',
+            'in_wishlist' => true
+        ], 201);
+    }
 }
