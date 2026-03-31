@@ -195,7 +195,7 @@ export const Categories: React.FC = () => {
                                 <div className="flex gap-2">
                                     <button
                                         type="submit"
-                                        className="flex-1 bg-bakery-600 hover:bg-bakery-700 text-white py-2 rounded-lg font-medium transition-colors shadow-sm"
+                                        className="flex-1 bg-[#8a6a5d] hover:bg-bakery-700 text-white py-2 rounded-lg font-medium transition-colors shadow-sm"
                                     >
                                         {isEditing ? "Update" : "Create"}
                                     </button>

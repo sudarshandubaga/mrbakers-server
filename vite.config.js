@@ -13,7 +13,9 @@ export default defineConfig({
             ],
             refresh: true,
         }),
-        tailwindcss(),
+        tailwindcss({
+            config: "./tailwind.config.js",
+        }),
         viteReact(),
     ],
 });
