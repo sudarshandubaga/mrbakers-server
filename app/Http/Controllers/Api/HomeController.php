@@ -72,4 +72,40 @@ class HomeController extends Controller
             'products_by_categories' => $productsByCategories,
         ]);
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+
+        if (! $query || strlen($query) < 2) {
+            return response()->json([
+                'categories' => [],
+                'products' => [],
+            ]);
+        }
+
+        $categories = Category::where('name', 'like', "%{$query}%")
+            ->select('id', 'name', 'slug', 'icon')
+            ->limit(5)
+            ->get();
+
+        $products = Product::where('name', 'like', "%{$query}%")
+            ->select('id', 'name', 'slug', 'main_image', 'trade_price', 'regular_price', 'has_variants')
+            ->limit(10)
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->has_variants ? $product->trade_price : $product->regular_price,
+                    'image' => $product->main_image,
+                    'in_wishlist' => $product->in_wishlist,
+                ];
+            });
+
+        return response()->json([
+            'categories' => $categories,
+            'products' => $products,
+        ]);
+    }
 }

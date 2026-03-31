@@ -42,6 +42,7 @@ Route::get('/razorpay-keys', function () {
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/home', [HomeController::class, 'index']);
+    Route::get('/search', [HomeController::class, 'search']);
 
     Route::apiResources([
         'wishlist' => WishlistController::class
