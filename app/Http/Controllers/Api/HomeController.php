@@ -18,6 +18,7 @@ class HomeController extends Controller
 
         // Categories (only parent categories for home)
         $categories = Category::whereNull('parent_id')
+            ->has('products')
             ->select('id', 'name', 'slug', 'image')
             ->get();
 
