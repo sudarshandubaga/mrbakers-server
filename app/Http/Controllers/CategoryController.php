@@ -28,6 +28,7 @@ class CategoryController extends Controller
             "parent_id"   => "nullable|exists:categories,id",
             "description" => "nullable|string",
             "image"       => "nullable|string",
+            "icon"        => "nullable|string",
         ]);
 
         $validated["slug"] = Str::slug($validated["name"]);
@@ -62,6 +63,7 @@ class CategoryController extends Controller
             "parent_id"   => "nullable|exists:categories,id",
             "description" => "nullable|string",
             "image"       => "nullable|string",
+            "icon"        => "nullable|string",
         ]);
 
         $validated["slug"] = Str::slug($validated["name"]);

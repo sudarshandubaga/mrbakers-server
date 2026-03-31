@@ -15,6 +15,7 @@ export const Categories: React.FC = () => {
     const [categories, setCategories] = useState<any[]>([]);
     const [initialValues, setInitialValues] = useState({
         name: "",
+        icon: "category",
         description: "",
     });
 
@@ -22,13 +23,14 @@ export const Categories: React.FC = () => {
         setIsEditing(category.slug);
         setInitialValues({
             name: category.name,
+            icon: category.icon || "category",
             description: category.description || "",
         });
     };
 
     const handleCancel = () => {
         setIsEditing(null);
-        setInitialValues({ name: "", description: "" });
+        setInitialValues({ name: "", icon: "category", description: "" });
     };
 
     const handleDelete = async (slug: string) => {
@@ -148,6 +150,38 @@ export const Categories: React.FC = () => {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Icon (Material Icon Name)
+                                    </label>
+                                    <Field
+                                        as="select"
+                                        name="icon"
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                                    >
+                                        <option value="category">Default (Category)</option>
+                                        <option value="cake">Cake</option>
+                                        <option value="bakery_dining">Bakery</option>
+                                        <option value="icecream">Ice Cream</option>
+                                        <option value="restaurant">Restaurant</option>
+                                        <option value="local_pizza">Pizza</option>
+                                        <option value="cookie">Cookie</option>
+                                        <option value="breakfast_dining">Breakfast</option>
+                                        <option value="lunch_dining">Lunch</option>
+                                        <option value="dinner_dining">Dinner</option>
+                                        <option value="fastfood">Fast Food</option>
+                                        <option value="coffee">Coffee</option>
+                                        <option value="local_bar">Bar/Drinks</option>
+                                        <option value="celebration">Celebration/Party</option>
+                                        <option value="redeem">Gift/Boxes</option>
+                                    </Field>
+                                    <ErrorMessage
+                                        name="icon"
+                                        component="div"
+                                        className="text-red-500 text-sm mt-1"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Description (optional)
                                     </label>
                                     <Field
@@ -195,6 +229,11 @@ export const Categories: React.FC = () => {
                                 <div>
                                     <h3 className="font-bold text-gray-900">
                                         {category.name}
+                                        {category.icon && (
+                                            <span className="ml-2 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-mono uppercase">
+                                                {category.icon}
+                                            </span>
+                                        )}
                                     </h3>
                                     {category.description && (
                                         <p className="text-sm text-gray-500">
