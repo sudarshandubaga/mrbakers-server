@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { SITE_INFO } from "../utils/constants.utils";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { RootState } from "../redux/store";
 
 interface SidebarProps {
     onNavigate?: () => void; // optional callback for closing mobile menu
@@ -39,7 +39,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
         { path: "/categories", label: "Categories", icon: Tags },
         { path: "/orders", label: "Orders", icon: ShoppingCart },
         { path: "/customers", label: "Customers", icon: Users },
-        { path: "/locations", label: "Locations", icon: MapPin },
         { path: "/settings", label: "App Settings", icon: Settings },
     ];
 
@@ -65,11 +64,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 shadow-sm z-10 flex flex-col">
-            <div className="flex items-center justify-center h-16 border-b border-gray-100 shrink-0">
-                <div className="flex items-center gap-2 text-bakery-600 font-bold text-xl">
-                    <ChefHat size={28} />
-                    <span>{SITE_INFO.TITLE}</span>
-                </div>
+            <div className="flex items-center justify-center py-6 border-b border-gray-100 shrink-0">
+                <img 
+                    src="/images/logo.png" 
+                    alt="Mr Bakers Logo" 
+                    className="h-16 w-auto object-contain"
+                />
             </div>
 
             <nav className="p-4 space-y-1 flex-1 overflow-y-auto">

@@ -22,8 +22,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'admin'], function () {
         Route::apiResources([
             'category' => CategoryController::class,
-            'product' => ProductController::class
+            'product' => ProductController::class,
+            'orders' => \App\Http\Controllers\Admin\OrderController::class,
+            'customers' => \App\Http\Controllers\Admin\CustomerController::class,
         ]);
+        
+        Route::get('/settings', [\App\Http\Controllers\Admin\AppSettingController::class, 'index']);
+        Route::post('/settings', [\App\Http\Controllers\Admin\AppSettingController::class, 'update']);
+        Route::post('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus']);
     });
 });
 

@@ -1,17 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Order, OrderStatus } from "../../types";
-import { Clock, CheckCircle2, Truck, Package, XCircle } from "lucide-react";
-import { INITIAL_ORDERS } from "@/constants";
+import { Clock, CheckCircle2, Truck, Package, XCircle, Loader2, ShoppingCart } from "lucide-react";
+import callApi from "../services";
+import { toast } from "react-toastify";
 
 export const Orders: React.FC = () => {
-    const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const updateStatus = (orderId: string, newStatus: OrderStatus) => {
-        setOrders((prev) =>
-            prev.map((o) =>
-                o.id === orderId ? { ...o, status: newStatus } : o,
-            ),
-        );
+    const fetchOrders = async () => {
+        try {
+            const data = await callApi("admin/orders");
+            setOrders(data);
+        } catch (error) {
+            toast.error("Failed to fetch orders");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
+        try {
+            await callApi(`admin/orders/${orderId}/status`, "POST", {
+                data: { status: newStatus.toLowerCase() }
+            });
+            setOrders((prev) =>
+                prev.map((o) =>
+                    o.id === orderId ? { ...o, status: newStatus } : o,
+                ),
+            );
+            toast.success("Order status updated");
+        } catch (error) {
+            toast.error("Failed to update status");
+        }
     };
 
     const getStatusColor = (status: OrderStatus) => {
@@ -62,6 +87,25 @@ export const Orders: React.FC = () => {
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );
     });
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-500">
+                <Loader2 className="w-12 h-12 animate-spin mb-4 text-bakery-600" />
+                <p className="text-lg font-medium">Baking your orders data...</p>
+            </div>
+        );
+    }
+
+    if (orders.length === 0) {
+        return (
+            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100 shadow-sm">
+                <ShoppingCart className="w-20 h-20 mx-auto text-gray-100 mb-6" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">No Orders Yet</h2>
+                <p className="text-gray-500 max-w-sm mx-auto">When customers place orders via the app, they will appear here in real-time.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

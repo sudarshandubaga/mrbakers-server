@@ -12,7 +12,7 @@
 <body class="bg-cream-50">
     <x-nav current="terms" />
 
-    <div class="min-h-screen py-12 px-4">
+    <div class="min-h-screen pt-40 pb-12 px-4">
         <div class="max-w-4xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-16">

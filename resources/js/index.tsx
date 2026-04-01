@@ -33,13 +33,11 @@ const LandingApp = () => {
 };
 
 const rootElement = document.getElementById("root");
-if (!rootElement) {
-    throw new Error("Could not find root element to mount to");
+if (rootElement) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+        <React.StrictMode>
+            <LandingApp />
+        </React.StrictMode>
+    );
 }
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-    <React.StrictMode>
-        <LandingApp />
-    </React.StrictMode>,
-);

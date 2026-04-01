@@ -1,30 +1,65 @@
-import React, { useState } from 'react';
-import { Save, Loader2, Store, CreditCard, Bell, Globe } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Save, Loader2, Store, Smartphone, Mail, Phone } from 'lucide-react';
+import callApi from '../services';
+import { toast } from 'react-toastify';
 
 export const AppSettings: React.FC = () => {
+  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState({
-    storeName: 'Crumb & Crust',
-    email: 'contact@crumbandcrust.com',
-    currency: 'INR',
-    taxRate: '5',
-    timezone: 'IST',
-    notifications: true,
-    autoAcceptOrders: false
+    store_name: '',
+    app_version: '',
+    email: '',
+    phone: ''
   });
 
-  const handleSave = (e: React.FormEvent) => {
+  const fetchSettings = async () => {
+    try {
+      const data = await callApi('admin/settings');
+      if (data) {
+        setSettings({
+          store_name: data.store_name || '',
+          app_version: data.app_version || '',
+          email: data.email || '',
+          phone: data.phone || ''
+        });
+      }
+    } catch (error) {
+      toast.error("Failed to load settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setTimeout(() => {
+    try {
+      await callApi('admin/settings', 'POST', { data: settings });
+      toast.success('Settings saved successfully!');
+    } catch (error) {
+      toast.error('Failed to save settings');
+    } finally {
       setIsSaving(false);
-      alert('Settings saved successfully!');
-    }, 1000);
+    }
   };
 
   const handleChange = (key: string, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-500">
+        <Loader2 className="w-12 h-12 animate-spin mb-4 text-bakery-600" />
+        <p className="text-lg font-medium">Loading app configurations...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -37,110 +72,67 @@ export const AppSettings: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
             <Store className="text-bakery-600" size={20} />
-            <h2 className="font-semibold text-gray-900">General Information</h2>
+            <h2 className="font-semibold text-gray-900">Store Information</h2>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Store Name</label>
               <input 
                 type="text" 
-                value={settings.storeName}
-                onChange={e => handleChange('storeName', e.target.value)}
+                value={settings.store_name}
+                onChange={e => handleChange('store_name', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                placeholder="e.g. Mr Bakers"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">App Version</label>
+              <div className="relative">
+                <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input 
+                  type="text" 
+                  value={settings.app_version}
+                  onChange={e => handleChange('app_version', e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                  placeholder="e.g. 1.0.0"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Settings */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+           <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+            <Mail className="text-bakery-600" size={20} />
+            <h2 className="font-semibold text-gray-900">Contact Details</h2>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Support Email</label>
-              <input 
-                type="email" 
-                value={settings.email}
-                onChange={e => handleChange('email', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Financial Settings */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-           <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
-            <CreditCard className="text-bakery-600" size={20} />
-            <h2 className="font-semibold text-gray-900">Financial & Localization</h2>
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-              <select 
-                value={settings.currency}
-                onChange={e => handleChange('currency', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
-              >
-                <option value="INR">INR (₹)</option>
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Default GST Rate (%)</label>
-              <input 
-                type="number" 
-                value={settings.taxRate}
-                onChange={e => handleChange('taxRate', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
-               <div className="relative">
-                 <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                 <input 
-                  type="text" 
-                  value={settings.timezone}
-                  onChange={e => handleChange('timezone', e.target.value)}
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input 
+                  type="email" 
+                  value={settings.email}
+                  onChange={e => handleChange('email', e.target.value)}
                   className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                  placeholder="contact@mrbakers.com"
                 />
-               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Notifications & Automation */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-           <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
-            <Bell className="text-bakery-600" size={20} />
-            <h2 className="font-semibold text-gray-900">Notifications & Automation</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Email Notifications</h3>
-                <p className="text-xs text-gray-500">Receive emails for new orders and low stock alerts.</p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={settings.notifications}
-                  onChange={e => handleChange('notifications', e.target.checked)}
-                  className="sr-only peer" 
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-bakery-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-bakery-600"></div>
-              </label>
             </div>
-            <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Auto-Accept Orders</h3>
-                <p className="text-xs text-gray-500">Automatically move new orders to "Preparing" status.</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input 
-                  type="checkbox" 
-                  checked={settings.autoAcceptOrders}
-                  onChange={e => handleChange('autoAcceptOrders', e.target.checked)}
-                  className="sr-only peer" 
+                  type="text" 
+                  value={settings.phone}
+                  onChange={e => handleChange('phone', e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                  placeholder="+91 12345 67890"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-bakery-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-bakery-600"></div>
-              </label>
+              </div>
             </div>
           </div>
         </div>

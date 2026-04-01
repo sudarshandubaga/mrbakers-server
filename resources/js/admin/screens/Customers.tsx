@@ -1,17 +1,33 @@
-import React, { useState } from "react";
-import { Download, Search, Mail, Phone, MapPin, Calendar } from "lucide-react";
-import { INITIAL_CUSTOMERS } from "@/constants";
+import React, { useEffect, useState } from "react";
+import { Download, Search, Mail, Phone, MapPin, Calendar, Loader2, Users } from "lucide-react";
+import callApi from "../services";
+import { toast } from "react-toastify";
 
 export const Customers: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
+    const [customers, setCustomers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const [customers] = useState(INITIAL_CUSTOMERS);
+    const fetchCustomers = async () => {
+        try {
+            const data = await callApi("admin/customers");
+            setCustomers(data);
+        } catch (error) {
+            toast.error("Failed to fetch customers");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
 
     const filteredCustomers = customers.filter(
         (c) =>
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.location.toLowerCase().includes(searchTerm.toLowerCase())
+            (c.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (c.email || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (c.location || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleExportCSV = () => {
@@ -48,6 +64,25 @@ export const Customers: React.FC = () => {
         link.click();
         document.body.removeChild(link);
     };
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-500">
+                <Loader2 className="w-12 h-12 animate-spin mb-4 text-bakery-600" />
+                <p className="text-lg font-medium">Fetching your customer base...</p>
+            </div>
+        );
+    }
+
+    if (customers.length === 0) {
+        return (
+            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100 shadow-sm">
+                <Users className="w-20 h-20 mx-auto text-gray-100 mb-6" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">No Customers Found</h2>
+                <p className="text-gray-500 max-w-sm mx-auto">New users will appear here once they register on the Mr Bakers app.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

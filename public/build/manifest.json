@@ -28,7 +28,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-CrX9HPKz.css",
+    "file": "assets/app-B26qh3wr.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -37,7 +37,7 @@
     ]
   },
   "resources/js/index.tsx": {
-    "file": "assets/index-DWCoq9br.js",
+    "file": "assets/index-DW-KLYcB.js",
     "name": "index",
     "src": "resources/js/index.tsx",
     "isEntry": true,
@@ -46,7 +46,7 @@
     ]
   },
   "resources/js/mrbakers-admin-router.tsx": {
-    "file": "assets/mrbakers-admin-router-MJxZkJiD.js",
+    "file": "assets/mrbakers-admin-router-CSGUvmKj.js",
     "name": "mrbakers-admin-router",
     "src": "resources/js/mrbakers-admin-router.tsx",
     "isEntry": true,
@@ -58,7 +58,7 @@
       "node_modules/onnxruntime-web/dist/ort.bundle.min.mjs"
     ],
     "css": [
-      "assets/app-CrX9HPKz.css"
+      "assets/app-B26qh3wr.css"
     ]
   }
 }
