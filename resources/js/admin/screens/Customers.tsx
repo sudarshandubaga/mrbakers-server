@@ -48,7 +48,7 @@ export const Customers: React.FC = () => {
             c.phone,
             `"${c.location}"`, // Quote to handle commas in address
             c.totalOrders,
-            c.totalSpent.toFixed(2),
+            (c.totalSpent || 0).toFixed(2),
             c.lastOrderDate,
         ]);
 
@@ -176,7 +176,7 @@ export const Customers: React.FC = () => {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 font-medium text-gray-900">
-                                        ₹{customer.totalSpent.toFixed(2)}
+                                        ₹{(customer.totalSpent || 0).toFixed(2)}
                                     </td>
                                     <td className="px-6 py-4 text-gray-500">
                                         <div className="flex items-center gap-1.5">
