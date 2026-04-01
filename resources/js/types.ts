@@ -27,7 +27,7 @@ export interface User {
 }
 
 export interface Customer {
-    id: string;
+    id: string | number;
     name: string;
     email: string;
     phone: string;
@@ -68,7 +68,8 @@ export interface OrderItem {
 }
 
 export interface Order {
-    id: string;
+    id: string | number;
+    order_number?: string;
     customerName: string;
     items: OrderItem[];
     total: number;

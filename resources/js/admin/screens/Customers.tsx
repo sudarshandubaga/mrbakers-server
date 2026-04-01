@@ -144,7 +144,7 @@ export const Customers: React.FC = () => {
                                                     {customer.name}
                                                 </div>
                                                 <div className="text-xs text-gray-400 font-mono">
-                                                    #{customer.id.slice(0, 8)}
+                                                    #{String(customer.id).slice(0, 8)}
                                                 </div>
                                             </div>
                                         </div>

@@ -124,7 +124,7 @@ export const Orders: React.FC = () => {
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <span className="text-xs font-mono text-gray-400">
-                                    #{order.id.slice(0, 8)}
+                                    {order.order_number || `#${String(order.id).slice(0, 8)}`}
                                 </span>
                                 <h3 className="font-bold text-gray-900">
                                     {order.customerName}
@@ -177,7 +177,7 @@ export const Orders: React.FC = () => {
                                     <button
                                         onClick={() =>
                                             updateStatus(
-                                                order.id,
+                                                String(order.id),
                                                 OrderStatus.CANCELLED,
                                             )
                                         }
@@ -188,7 +188,7 @@ export const Orders: React.FC = () => {
                                     <button
                                         onClick={() =>
                                             updateStatus(
-                                                order.id,
+                                                String(order.id),
                                                 OrderStatus.PREPARING,
                                             )
                                         }
@@ -202,7 +202,7 @@ export const Orders: React.FC = () => {
                                 <button
                                     onClick={() =>
                                         updateStatus(
-                                            order.id,
+                                            String(order.id),
                                             OrderStatus.READY,
                                         )
                                     }
@@ -215,7 +215,7 @@ export const Orders: React.FC = () => {
                                 <button
                                     onClick={() =>
                                         updateStatus(
-                                            order.id,
+                                            String(order.id),
                                             OrderStatus.DELIVERED,
                                         )
                                     }
