@@ -26,10 +26,10 @@ export const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [dashboardData, setDashboardData] = useState<{
         stats: {
-            total_revenue: number;
-            active_orders: number;
-            delivered_orders: number;
-            new_customers: number;
+            total_revenue: { value: number; trend: number };
+            active_orders: { value: number; trend: number | null };
+            delivered_orders: { value: number; trend: number };
+            new_customers: { value: number; trend: number };
         };
         weekly_revenue: { name: string; sales: number }[];
         category_sales: { name: string; value: number }[];
@@ -44,7 +44,7 @@ export const Dashboard: React.FC = () => {
             setLoadingInsight(true);
             const geminiResult = await generateDashboardInsights(
                 data.weekly_revenue,
-                data.stats.active_orders,
+                data.stats.active_orders.value,
             );
             setInsight(geminiResult);
         } catch (error) {
@@ -71,6 +71,11 @@ export const Dashboard: React.FC = () => {
     const { stats, weekly_revenue, category_sales } = dashboardData;
     const COLORS = ["#8a6a5d", "#a18072", "#d2bab0", "#e0cec7"];
 
+    const formatTrend = (trend: number) => {
+        const sign = trend >= 0 ? "+" : "";
+        return `${sign}${trend}%`;
+    };
+
     return (
         <div className="space-y-6 animate-fade-in">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -79,7 +84,7 @@ export const Dashboard: React.FC = () => {
                         Dashboard
                     </h1>
                     <p className="text-gray-500">
-                        Welcome back, here's what's happening at Crumb & Crust
+                        Welcome back, here's what's happening at Mr. Bakers
                         today.
                     </p>
                 </div>
@@ -88,30 +93,30 @@ export const Dashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatsCard
                     title="Total Revenue"
-                    value={`₹${stats.total_revenue.toLocaleString()}`}
+                    value={`₹${stats.total_revenue.value.toLocaleString()}`}
                     icon={IndianRupee}
-                    trend="+12.5%"
-                    trendUp={true}
+                    trend={formatTrend(stats.total_revenue.trend)}
+                    trendUp={stats.total_revenue.trend >= 0}
                 />
                 <StatsCard
                     title="Active Orders"
-                    value={stats.active_orders}
+                    value={stats.active_orders.value}
                     icon={ShoppingBag}
                     color="bg-orange-50"
                 />
                 <StatsCard
                     title="Delivered"
-                    value={stats.delivered_orders}
+                    value={stats.delivered_orders.value}
                     icon={Clock}
-                    trend="+4.3%"
-                    trendUp={true}
+                    trend={formatTrend(stats.delivered_orders.trend)}
+                    trendUp={stats.delivered_orders.trend >= 0}
                 />
                 <StatsCard
                     title="New Customers"
-                    value={stats.new_customers.toLocaleString()}
+                    value={stats.new_customers.value.toLocaleString()}
                     icon={Users}
-                    trend="+8.2%"
-                    trendUp={true}
+                    trend={formatTrend(stats.new_customers.trend)}
+                    trendUp={stats.new_customers.trend >= 0}
                 />
             </div>
 
