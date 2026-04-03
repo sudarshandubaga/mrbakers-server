@@ -10,7 +10,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('items')
+        $orders = Order::with(['items', 'user', 'address'])
             ->orderBy('id', 'desc')
             ->get()
             ->map(function($order) {
@@ -18,9 +18,21 @@ class OrderController extends Controller
                     'id' => $order->id,
                     'order_number' => $order->order_number,
                     'customerName' => $order->user->name ?? 'Guest User',
+                    'customerPhone' => $order->user->phone ?? 'N/A',
                     'timestamp' => $order->created_at->toISOString(),
                     'status' => strtoupper($order->status),
+                    'subtotal' => (float)$order->subtotal,
+                    'delivery_fee' => (float)$order->delivery_fee,
                     'total' => (float)$order->total,
+                    'payment_method' => $order->payment_id ? 'Prepaid (Razorpay)' : 'Cash on Delivery',
+                    'address' => $order->address ? [
+                        'label' => $order->address->label,
+                        'address_line1' => $order->address->address_line1,
+                        'address_line2' => $order->address->address_line2,
+                        'landmark' => $order->address->landmark,
+                        'city' => $order->address->city,
+                        'pincode' => $order->address->pincode,
+                    ] : null,
                     'items' => $order->items->map(function($item) {
                         return [
                             'name' => $item->product_name . ($item->variant_name ? " ($item->variant_name)" : ""),

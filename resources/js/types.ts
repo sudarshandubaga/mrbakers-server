@@ -71,10 +71,22 @@ export interface Order {
     id: string | number;
     order_number?: string;
     customerName: string;
+    customerPhone: string;
     items: OrderItem[];
+    subtotal: number;
+    delivery_fee: number;
     total: number;
     status: OrderStatus;
     timestamp: string;
+    payment_method?: string;
+    address?: {
+        label: string;
+        address_line1: string;
+        address_line2?: string;
+        landmark?: string;
+        city: string;
+        pincode: string;
+    };
 }
 
 export interface SalesData {

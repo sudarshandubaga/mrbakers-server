@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Order, OrderStatus } from "../../types";
-import { Clock, CheckCircle2, Truck, Package, XCircle, Loader2, ShoppingCart } from "lucide-react";
+import { Clock, CheckCircle2, Truck, Package, XCircle, Loader2, ShoppingCart, Phone, MapPin, CreditCard, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import callApi from "../services";
 import { toast } from "react-toastify";
 
@@ -115,63 +115,121 @@ export const Orders: React.FC = () => {
                 </h1>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
                 {sortedOrders.map((order) => (
                     <div
                         key={order.id}
-                        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col transition-all hover:shadow-md"
+                        className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col transition-all hover:shadow-md"
                     >
-                        <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <span className="text-xs font-mono text-gray-400">
+                        <div className="p-6 border-b border-gray-50 bg-gray-50/30 rounded-t-xl">
+                            <div className="flex justify-between items-start mb-2">
+                                <span className="text-xs font-mono font-bold text-bakery-600">
                                     {order.order_number || `#${String(order.id).slice(0, 8)}`}
                                 </span>
-                                <h3 className="font-bold text-gray-900">
-                                    {order.customerName}
-                                </h3>
-                                <p className="text-xs text-gray-500">
-                                    {new Date(order.timestamp).toLocaleString()}
-                                </p>
-                            </div>
-                            <div
-                                className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5 ${getStatusColor(
-                                    order.status,
-                                )}`}
-                            >
-                                {getStatusIcon(order.status)}
-                                {order.status}
-                            </div>
-                        </div>
-
-                        <div className="flex-1 space-y-3 mb-4">
-                            {order.items.map((item, idx) => (
                                 <div
-                                    key={idx}
-                                    className="flex justify-between items-center text-sm"
+                                    className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold border-2 flex items-center gap-1.5 ${getStatusColor(
+                                        order.status,
+                                    )} shadow-sm`}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-gray-700">
-                                            {item.quantity}x
-                                        </span>
-                                        <span className="text-gray-600">
-                                            {item.name}
-                                        </span>
-                                    </div>
-                                    <span className="text-gray-900 font-medium">
-                                        ₹
-                                        {(item.price * item.quantity).toFixed(
-                                            2,
-                                        )}
-                                    </span>
+                                    {getStatusIcon(order.status)}
+                                    {order.status}
                                 </div>
-                            ))}
-                            <div className="border-t border-gray-100 pt-3 flex justify-between items-center font-bold text-gray-900">
-                                <span>Total</span>
-                                <span>₹{order.total.toFixed(2)}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-bold text-gray-900 text-lg leading-tight mb-1">
+                                        {order.customerName}
+                                    </h3>
+                                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                                        <Clock size={12} />
+                                        {new Date(order.timestamp).toLocaleString()}
+                                    </div>
+                                </div>
+                                <a 
+                                    href={`tel:${order.customerPhone}`}
+                                    className="p-2.5 bg-green-50 text-green-600 rounded-full hover:bg-green-100 transition-colors shadow-sm"
+                                    title="Call Customer"
+                                >
+                                    <Phone size={18} />
+                                </a>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2 mt-auto">
+                        <div className="p-6 flex-1 space-y-5">
+                            {/* Address Section */}
+                            {order.address && (
+                                <div className="space-y-2">
+                                    <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
+                                        <MapPin size={10} /> Delivery Address
+                                    </h4>
+                                    <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="text-[10px] px-1.5 py-0.5 bg-bakery-100 text-bakery-700 rounded-md font-bold">
+                                                {order.address.label}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-gray-600 leading-relaxed">
+                                            {order.address.address_line1}, {order.address.address_line2 && `${order.address.address_line2}, `}
+                                            {order.address.landmark && <span className="italic block mt-0.5">Near: {order.address.landmark}</span>}
+                                            <span className="font-medium block">{order.address.city} - {order.address.pincode}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Items Section */}
+                            <div className="space-y-3">
+                                <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
+                                    <Package size={10} /> Order Items
+                                </h4>
+                                <div className="max-h-48 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+                                    {order.items.map((item, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="flex justify-between items-start text-sm group"
+                                        >
+                                            <div className="flex gap-2">
+                                                <span className="min-w-[24px] text-center font-bold text-bakery-600 bg-bakery-50 rounded px-1 text-xs">
+                                                    {item.quantity}
+                                                </span>
+                                                <span className="text-gray-700 font-medium">
+                                                    {item.name}
+                                                </span>
+                                            </div>
+                                            <span className="text-gray-400 text-xs font-mono tabular-nums">
+                                                ₹{(item.price * item.quantity).toFixed(2)}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Billing Section */}
+                            <div className="pt-4 border-t border-dashed border-gray-200">
+                                <div className="space-y-1.5">
+                                    <div className="flex justify-between text-xs text-gray-500">
+                                        <span>Subtotal</span>
+                                        <span className="font-mono">₹{order.subtotal.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs text-gray-500">
+                                        <span>Delivery Fee</span>
+                                        <span className="font-mono">₹{order.delivery_fee.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-gray-900 font-black text-lg pt-2">
+                                        <div className="flex items-center gap-2">
+                                            <span>Total</span>
+                                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-bold uppercase ring-1 ring-blue-100">
+                                                <CreditCard size={10} />
+                                                {order.payment_method || 'CASH'}
+                                            </div>
+                                        </div>
+                                        <span className="text-bakery-600">₹{order.total.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="px-6 pb-6 pt-2 grid grid-cols-2 gap-3">
                             {order.status === OrderStatus.PENDING && (
                                 <>
                                     <button
@@ -181,7 +239,7 @@ export const Orders: React.FC = () => {
                                                 OrderStatus.CANCELLED,
                                             )
                                         }
-                                        className="w-full py-2 px-4 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-sm font-medium transition-colors"
+                                        className="py-2.5 px-4 rounded-xl border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 text-xs font-bold uppercase tracking-wider transition-all"
                                     >
                                         Reject
                                     </button>
@@ -192,7 +250,7 @@ export const Orders: React.FC = () => {
                                                 OrderStatus.PREPARING,
                                             )
                                         }
-                                        className="w-full py-2 px-4 rounded-lg bg-bakery-600 text-white hover:bg-bakery-700 text-sm font-medium shadow-sm transition-colors"
+                                        className="py-2.5 px-4 rounded-xl bg-bakery-600 text-white hover:bg-bakery-700 text-xs font-bold uppercase tracking-wider shadow-lg shadow-bakery-100 transition-all hover:-translate-y-0.5 active:translate-y-0"
                                     >
                                         Start Baking
                                     </button>
@@ -206,9 +264,9 @@ export const Orders: React.FC = () => {
                                             OrderStatus.READY,
                                         )
                                     }
-                                    className="col-span-2 w-full py-2 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium shadow-sm transition-colors"
+                                    className="col-span-2 w-full py-3 px-4 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold uppercase tracking-wider shadow-lg shadow-blue-100 transition-all hover:-translate-y-0.5"
                                 >
-                                    Mark Ready
+                                    Mark Ready for Pick-up
                                 </button>
                             )}
                             {order.status === OrderStatus.READY && (
@@ -219,7 +277,7 @@ export const Orders: React.FC = () => {
                                             OrderStatus.DELIVERED,
                                         )
                                     }
-                                    className="col-span-2 w-full py-2 px-4 rounded-lg bg-green-600 text-white hover:bg-green-700 text-sm font-medium shadow-sm transition-colors"
+                                    className="col-span-2 w-full py-3 px-4 rounded-xl bg-green-600 text-white hover:bg-green-700 text-xs font-bold uppercase tracking-wider shadow-lg shadow-green-100 transition-all hover:-translate-y-0.5"
                                 >
                                     Complete Delivery
                                 </button>
@@ -228,9 +286,9 @@ export const Orders: React.FC = () => {
                                 order.status === OrderStatus.CANCELLED) && (
                                 <button
                                     disabled
-                                    className="col-span-2 w-full py-2 px-4 rounded-lg bg-gray-100 text-gray-400 text-sm font-medium cursor-not-allowed"
+                                    className="col-span-2 w-full py-3 px-4 rounded-xl bg-gray-50 text-gray-400 border border-gray-100 text-xs font-bold uppercase tracking-wider cursor-not-allowed opacity-60"
                                 >
-                                    Order Closed
+                                    Order Completed
                                 </button>
                             )}
                         </div>

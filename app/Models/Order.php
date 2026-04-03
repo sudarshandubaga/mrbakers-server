@@ -17,6 +17,16 @@ class Order extends Model
         'address_id'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(UserAddress::class, 'address_id');
+    }
+
     public function items()
     {
         return $this->hasMany(OrderItem::class);
