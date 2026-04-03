@@ -11,66 +11,65 @@ import {
     Bar,
     Cell,
 } from "recharts";
-import { IndianRupee, ShoppingBag, Users, Clock, Sparkles } from "lucide-react";
+import { IndianRupee, ShoppingBag, Users, Clock, Sparkles, Loader2 } from "lucide-react";
 import { StatsCard } from "./StatsCard";
 import { Order, OrderStatus } from "../../types";
 import { generateDashboardInsights } from "../services/geminiService";
-import { INITIAL_ORDERS } from "@/constants";
-
-const DAILY_DATA = [
-    { name: "Mon", sales: 40000 },
-    { name: "Tue", sales: 30000 },
-    { name: "Wed", sales: 20000 },
-    { name: "Thu", sales: 27800 },
-    { name: "Fri", sales: 18900 },
-    { name: "Sat", sales: 63900 },
-    { name: "Sun", sales: 44900 },
-];
-
-const CATEGORY_DATA = [
-    { name: "Bread", value: 400 },
-    { name: "Pastry", value: 300 },
-    { name: "Cakes", value: 300 },
-    { name: "Fast Food", value: 200 },
-];
-
-const COLORS = ["#8a6a5d", "#a18072", "#d2bab0", "#e0cec7"];
+import callApi from "../services";
+import { toast } from "react-toastify";
 
 export const Dashboard: React.FC = () => {
     const [insight, setInsight] = useState<string>(
         "Analyzing your bakery data...",
     );
     const [loadingInsight, setLoadingInsight] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [dashboardData, setDashboardData] = useState<{
+        stats: {
+            total_revenue: number;
+            active_orders: number;
+            delivered_orders: number;
+            new_customers: number;
+        };
+        weekly_revenue: { name: string; sales: number }[];
+        category_sales: { name: string; value: number }[];
+    } | null>(null);
 
-    const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
-
-    // Calculate stats
-    const totalSales = orders.reduce((acc, order) => acc + order.total, 0);
-    const pendingOrders = orders.filter(
-        (o) => o.status === OrderStatus.PENDING,
-    ).length;
-    const completedOrders = orders.filter(
-        (o) => o.status === OrderStatus.DELIVERED,
-    ).length;
+    const fetchDashboardData = async () => {
+        try {
+            const data = await callApi("admin/dashboard");
+            setDashboardData(data);
+            
+            // Fetch Gemini Insights
+            setLoadingInsight(true);
+            const geminiResult = await generateDashboardInsights(
+                data.weekly_revenue,
+                data.stats.active_orders,
+            );
+            setInsight(geminiResult);
+        } catch (error) {
+            toast.error("Failed to load dashboard data");
+        } finally {
+            setLoading(false);
+            setLoadingInsight(false);
+        }
+    };
 
     useEffect(() => {
-        let mounted = true;
-        const fetchInsight = async () => {
-            setLoadingInsight(true);
-            const result = await generateDashboardInsights(
-                DAILY_DATA,
-                pendingOrders,
-            );
-            if (mounted) {
-                setInsight(result);
-                setLoadingInsight(false);
-            }
-        };
-        fetchInsight();
-        return () => {
-            mounted = false;
-        };
-    }, [pendingOrders]); // Re-run if pending orders change significantly
+        fetchDashboardData();
+    }, []);
+
+    if (loading || !dashboardData) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-500">
+                <Loader2 className="w-12 h-12 animate-spin mb-4 text-bakery-600" />
+                <p className="text-lg font-medium">Baking your dashboard data...</p>
+            </div>
+        );
+    }
+
+    const { stats, weekly_revenue, category_sales } = dashboardData;
+    const COLORS = ["#8a6a5d", "#a18072", "#d2bab0", "#e0cec7"];
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -89,41 +88,65 @@ export const Dashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatsCard
                     title="Total Revenue"
-                    value={`₹${totalSales.toLocaleString()}`}
+                    value={`₹${stats.total_revenue.toLocaleString()}`}
                     icon={IndianRupee}
                     trend="+12.5%"
                     trendUp={true}
                 />
                 <StatsCard
                     title="Active Orders"
-                    value={pendingOrders}
+                    value={stats.active_orders}
                     icon={ShoppingBag}
                     color="bg-orange-50"
                 />
                 <StatsCard
                     title="Delivered"
-                    value={completedOrders}
+                    value={stats.delivered_orders}
                     icon={Clock}
                     trend="+4.3%"
                     trendUp={true}
                 />
                 <StatsCard
                     title="New Customers"
-                    value="1,203"
+                    value={stats.new_customers.toLocaleString()}
                     icon={Users}
                     trend="+8.2%"
                     trendUp={true}
                 />
             </div>
 
+            {/* AI Insights Section */}
+            <div className="bg-gradient-to-r from-bakery-600 to-bakery-700 rounded-2xl p-6 shadow-lg border border-bakery-500/20 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                    <Sparkles size={120} className="text-white" />
+                </div>
+                <div className="relative z-10 flex items-start gap-4">
+                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
+                        <Sparkles className="text-bakery-100" size={24} />
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-white font-bold text-lg">Bakery AI Insights</h3>
+                            {loadingInsight && <Loader2 size={16} className="text-bakery-200 animate-spin" />}
+                        </div>
+                        <p className="text-bakery-50 leading-relaxed max-w-4xl italic">
+                            "{insight}"
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">
-                        Weekly Revenue Analytics
-                    </h3>
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg font-bold text-gray-900">
+                            Weekly Revenue Analytics
+                        </h3>
+                        <span className="text-xs text-gray-400 font-medium px-2.5 py-1 bg-gray-50 rounded-lg">Last 7 Days</span>
+                    </div>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={DAILY_DATA}>
+                            <AreaChart data={weekly_revenue}>
                                 <defs>
                                     <linearGradient
                                         id="colorSales"
@@ -164,10 +187,10 @@ export const Dashboard: React.FC = () => {
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        borderRadius: "8px",
+                                        borderRadius: "12px",
                                         border: "none",
                                         boxShadow:
-                                            "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                                            "0 10px 15px -3px rgb(0 0 0 / 0.1)",
                                     }}
                                     cursor={{
                                         stroke: "#8a6a5d",
@@ -193,7 +216,7 @@ export const Dashboard: React.FC = () => {
                     </h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={CATEGORY_DATA} layout="vertical">
+                            <BarChart data={category_sales} layout="vertical">
                                 <CartesianGrid
                                     strokeDasharray="3 3"
                                     horizontal={true}
@@ -218,7 +241,7 @@ export const Dashboard: React.FC = () => {
                                     radius={[0, 4, 4, 0]}
                                     barSize={32}
                                 >
-                                    {CATEGORY_DATA.map((entry, index) => (
+                                    {category_sales.map((entry, index) => (
                                         <Cell
                                             key={`cell-${index}`}
                                             fill={COLORS[index % COLORS.length]}

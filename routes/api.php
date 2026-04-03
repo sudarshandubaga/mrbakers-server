@@ -27,6 +27,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             'customers' => \App\Http\Controllers\Admin\CustomerController::class,
         ]);
         
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index']);
         Route::get('/settings', [\App\Http\Controllers\Admin\AppSettingController::class, 'index']);
         Route::post('/settings', [\App\Http\Controllers\Admin\AppSettingController::class, 'update']);
         Route::post('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus']);
