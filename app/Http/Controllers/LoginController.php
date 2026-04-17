@@ -12,14 +12,14 @@ class LoginController extends Controller
     {
         // Validate inputs
         $request->validate([
-            'phone' => 'required|regex:/\d{10}$/',
+            'email' => 'required|email',
             'password' => 'required'
         ]);
 
         $role = $request?->role ?: 'customer';
 
-        // Find user by phone
-        $user = User::where('phone', $request->phone)->where('role', $role)->first();
+        // Find user by email
+        $user = User::where('email', $request->email)->where('role', $role)->first();
 
         if (!$user) {
             return response()->json([
@@ -47,16 +47,16 @@ class LoginController extends Controller
     public function send_otp(Request $request)
     {
         $request->validate([
-            'phone' => 'required|regex:/\d{10}$/'
+            'email' => 'required|email'
         ]);
 
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('email', $request->email)->first();
 
         $otp = rand(1000, 9999);
 
         if (!$user) {
             $user = new User();
-            $user->phone = $request->phone;
+            $user->email = $request->email;
             $user->role = 'customer';
         }
 
@@ -73,15 +73,15 @@ class LoginController extends Controller
     public function verify_otp(Request $request)
     {
         $request->validate([
-            'phone' => 'required|regex:/\d{10}$/',
+            'email' => 'required|email',
             'otp' => 'required|numeric|min:1000|max:9999',
         ]);
 
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('email', $request->email)->first();
 
         if (!$user) {
             return response()->json([
-                'message' => 'Invalid phone number'
+                'message' => 'Invalid email address'
             ], 401);
         }
 
@@ -109,11 +109,11 @@ class LoginController extends Controller
     public function sign_up(Request $request)
     {
         $request->validate([
-            'phone' => 'required|regex:/\d{10}$/',
+            'email' => 'required|email',
             'name' => 'required|string|regex:/^[a-zA-Z ]+$/',
         ]);
 
-        $user = User::where('phone', $request->phone)->firstOrFail();
+        $user = User::where('email', $request->email)->firstOrFail();
         $user->first_name = $request->name;
         $user->save();
 
