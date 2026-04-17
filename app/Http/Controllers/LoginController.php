@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class LoginController extends Controller
 {
@@ -63,6 +65,9 @@ class LoginController extends Controller
         $user->otp = $otp;
         $user->otp_expires_at = now()->addMinutes(10);
         $user->save();
+
+        // Send OTP via Email
+        Mail::to($request->email)->send(new OtpMail($otp));
 
         return response()->json([
             'message' => 'OTP sent successfully',
