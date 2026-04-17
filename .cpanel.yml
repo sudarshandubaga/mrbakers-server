@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOY_PATH=/home1/rudrarmq/mrbakers.thedemoonline.site
+    - export DEPLOY_PATH=/home1/adboolrt/mrbakersjodhpur.in
     - /bin/cp -R * $DEPLOY_PATH
