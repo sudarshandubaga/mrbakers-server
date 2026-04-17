@@ -2,12 +2,12 @@ import callApi from "../../services";
 import { AppDispatch } from "recharts/types/state/store";
 
 export const doLogin =
-    (phone: string, password: string, role: string = "admin") =>
+    (email: string, password: string, role: string = "admin") =>
     async (dispatch: AppDispatch) => {
         try {
             let apiResponse = await callApi("login", "POST", {
                 data: {
-                    phone,
+                    email,
                     password,
                     role,
                 },

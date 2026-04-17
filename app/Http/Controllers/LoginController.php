@@ -14,14 +14,24 @@ class LoginController extends Controller
     {
         // Validate inputs
         $request->validate([
-            'email' => 'required|email',
             'password' => 'required'
         ]);
 
+        $identifier = $request->email ?: $request->phone;
+
+        if (!$identifier) {
+            return response()->json([
+                'message' => 'Email or Mobile Number is required'
+            ], 422);
+        }
+
         $role = $request?->role ?: 'customer';
 
-        // Find user by email
-        $user = User::where('email', $request->email)->where('role', $role)->first();
+        // Find user by email or phone
+        $user = User::where(function ($query) use ($identifier) {
+            $query->where('email', $identifier)
+                ->orWhere('phone', $identifier);
+        })->where('role', $role)->first();
 
         if (!$user) {
             return response()->json([

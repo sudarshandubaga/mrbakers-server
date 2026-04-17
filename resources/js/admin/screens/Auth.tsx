@@ -5,7 +5,7 @@ import {
     KeyRound,
     Loader2,
     ArrowLeft,
-    Phone,
+    Mail,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { doLogin } from "../redux/actions/authAction";
@@ -15,13 +15,13 @@ import { toast } from "react-toastify";
 export const Auth: React.FC = () => {
     const [view, setView] = useState<"LOGIN" | "FORGOT">("LOGIN");
     const [isLoading, setIsLoading] = useState(false);
-    const [phone, setPhone] = useState("9012345678");
+    const [email, setEmail] = useState("admin@mrbakers.com");
     const [password, setPassword] = useState("Admin@123");
 
     const dispatch = useDispatch<AppDispatch>();
 
     const onLogin = async () => {
-        let res = await dispatch(doLogin(phone, password));
+        let res = await dispatch(doLogin(email, password));
 
         if (!res.success) {
             toast.warning(res.error || "Login failed.");
@@ -80,25 +80,23 @@ export const Auth: React.FC = () => {
                         <p className="text-gray-500 mt-2">
                             {view === "LOGIN"
                                 ? "Enter your credentials to access the admin panel."
-                                : "Enter your phone to receive reset instructions."}
+                                : "Enter your email to receive reset instructions."}
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                Mobile No.
+                                Email Address
                             </label>
                             <div className="relative">
-                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                                 <input
-                                    type="tel"
-                                    minLength={10}
-                                    maxLength={10}
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none transition-all"
-                                    placeholder="10 Digit Mobile No."
+                                    placeholder="your@email.com"
                                     required
                                 />
                             </div>
