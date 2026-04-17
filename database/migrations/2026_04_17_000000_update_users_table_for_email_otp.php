@@ -17,7 +17,7 @@ return new class extends Migration {
             // Make email unique and maybe not nullable if we want it required
             // However, existing users might have null emails, so be careful.
             // For now, let's just make sure it's indexable for faster search.
-            $table->string('email')->unique()->change();
+            $table->string('email')->unique()->nullable()->change();
         });
     }
 
