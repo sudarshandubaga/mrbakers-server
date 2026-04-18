@@ -14,6 +14,8 @@ export default function authReducer(state = initialState, action: any) {
                 ...payload,
                 isAuthenticated: true,
             };
+        case "LOGOUT":
+            return initialState;
 
         default:
             return state;

@@ -34,6 +34,10 @@ class AppSettingController extends Controller
         $settings->app_version = $request->app_version;
         $settings->email = $request->email;
         $settings->phone = $request->phone;
+        $settings->help_support = $request->help_support;
+        $settings->privacy_policy = $request->privacy_policy;
+        $settings->terms_conditions = $request->terms_conditions;
+        $settings->disclaimer = $request->disclaimer;
         $settings->save();
 
         return response()->json(['success' => true, 'settings' => $settings]);

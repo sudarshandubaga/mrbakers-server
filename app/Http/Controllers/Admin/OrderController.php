@@ -17,13 +17,15 @@ class OrderController extends Controller
                 return [
                     'id' => $order->id,
                     'order_number' => $order->order_number,
-                    'customerName' => $order->user->name ?? 'Guest User',
+                    'customerName' => ($order->user->first_name ?? '') . ' ' . ($order->user->last_name ?? ''),
+                    'customerEmail' => $order->user->email ?? 'N/A',
                     'customerPhone' => $order->user->phone ?? 'N/A',
                     'timestamp' => $order->created_at->toISOString(),
                     'status' => strtoupper($order->status),
                     'subtotal' => (float)$order->subtotal,
                     'delivery_fee' => (float)$order->delivery_fee,
                     'total' => (float)$order->total,
+                    'payment_id' => $order->payment_id,
                     'payment_method' => $order->payment_id ? 'Prepaid (Razorpay)' : 'Cash on Delivery',
                     'address' => $order->address ? [
                         'label' => $order->address->label,
@@ -32,6 +34,8 @@ class OrderController extends Controller
                         'landmark' => $order->address->landmark,
                         'city' => $order->address->city,
                         'pincode' => $order->address->pincode,
+                        'lat' => $order->address->latitude,
+                        'lng' => $order->address->longitude,
                     ] : null,
                     'items' => $order->items->map(function($item) {
                         return [

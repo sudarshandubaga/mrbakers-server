@@ -212,18 +212,36 @@ export const Orders: React.FC = () => {
                                         </h4>
                                         <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                                             <h3 className="font-bold text-gray-900 text-lg leading-tight mb-1">{selectedOrder.customerName}</h3>
-                                            <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
-                                                <Phone size={14} />
-                                                <a href={`tel:${selectedOrder.customerPhone}`} className="hover:underline tracking-tight">{selectedOrder.customerPhone}</a>
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
+                                                    <Phone size={14} />
+                                                    <a href={`tel:${selectedOrder.customerPhone}`} className="hover:underline tracking-tight">{selectedOrder.customerPhone}</a>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-xs text-gray-500 font-medium lowercase">
+                                                    <Eye size={12} />
+                                                    <span>{selectedOrder.customerEmail}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </section>
 
                                     {selectedOrder.address && (
                                         <section>
-                                            <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-3 flex items-center gap-2">
-                                                <MapPin size={12} /> Delivery Address
-                                            </h4>
+                                            <div className="flex justify-between items-center mb-3">
+                                                <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
+                                                    <MapPin size={12} /> Delivery Address
+                                                </h4>
+                                                {selectedOrder.address.lat && (
+                                                    <a 
+                                                        href={`https://www.google.com/maps?q=${selectedOrder.address.lat},${selectedOrder.address.lng}`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="text-[10px] text-blue-600 font-bold hover:underline flex items-center gap-1"
+                                                    >
+                                                        <ExternalLink size={10} /> Open Map
+                                                    </a>
+                                                )}
+                                            </div>
                                             <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
                                                 <span className="inline-block px-1.5 py-0.5 bg-bakery-100 text-bakery-700 rounded text-[9px] font-bold uppercase mb-2">
                                                     {selectedOrder.address.label}
@@ -234,6 +252,18 @@ export const Orders: React.FC = () => {
                                                     {selectedOrder.address.landmark && <span className="block italic text-xs text-gray-500 mt-1">Near: {selectedOrder.address.landmark}</span>}
                                                     <span className="font-bold block mt-1">{selectedOrder.address.city} - {selectedOrder.address.pincode}</span>
                                                 </p>
+                                            </div>
+                                        </section>
+                                    )}
+
+                                    {selectedOrder.payment_id && (
+                                        <section>
+                                            <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-3 flex items-center gap-2">
+                                                <CreditCard size={12} /> Payment Detail
+                                            </h4>
+                                            <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                                                <p className="text-[10px] text-blue-400 font-bold uppercase mb-1">Razorpay Payment ID</p>
+                                                <code className="text-xs font-mono font-bold text-blue-700 block break-all">{selectedOrder.payment_id}</code>
                                             </div>
                                         </section>
                                     )}

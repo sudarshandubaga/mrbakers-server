@@ -15,7 +15,7 @@ import {
     Lock,
 } from "lucide-react";
 import { SITE_INFO } from "../utils/constants.utils";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 
 interface SidebarProps {
@@ -26,11 +26,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const { user } = useSelector((state: RootState) => state.auth);
 
     const onLogout = () => {
-        //
+        localStorage.removeItem("token");
+        dispatch({ type: "LOGOUT" });
+        window.location.href = "/";
     };
 
     const navItems = [

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Save, Loader2, Store, Smartphone, Mail, Phone } from "lucide-react";
+import { Save, Loader2, Store, Smartphone, Mail, Phone, FileText } from "lucide-react";
 import callApi from "../services";
 import { toast } from "react-toastify";
 
@@ -11,6 +11,10 @@ export const AppSettings: React.FC = () => {
         app_version: "",
         email: "",
         phone: "",
+        help_support: "",
+        privacy_policy: "",
+        terms_conditions: "",
+        disclaimer: "",
     });
 
     const fetchSettings = async () => {
@@ -22,6 +26,10 @@ export const AppSettings: React.FC = () => {
                     app_version: data.app_version || "",
                     email: data.email || "",
                     phone: data.phone || "",
+                    help_support: data.help_support || "",
+                    privacy_policy: data.privacy_policy || "",
+                    terms_conditions: data.terms_conditions || "",
+                    disclaimer: data.disclaimer || "",
                 });
             }
         } catch (error) {
@@ -160,6 +168,76 @@ export const AppSettings: React.FC = () => {
                                     placeholder="+91 12345 67890"
                                 />
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Pages */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                        <FileText className="text-bakery-600" size={20} />
+                        <h2 className="font-semibold text-gray-900">
+                            App Content Pages (HTML Supported)
+                        </h2>
+                    </div>
+                    <div className="p-6 space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Help & Support
+                            </label>
+                            <textarea
+                                value={settings.help_support}
+                                onChange={(e) =>
+                                    handleChange("help_support", e.target.value)
+                                }
+                                rows={4}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none font-mono text-sm"
+                                placeholder="Support contact info, FAQs, etc."
+                            />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Privacy Policy
+                                </label>
+                                <textarea
+                                    value={settings.privacy_policy}
+                                    onChange={(e) =>
+                                        handleChange("privacy_policy", e.target.value)
+                                    }
+                                    rows={10}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none font-mono text-sm"
+                                    placeholder="Privacy policy content..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Terms & Conditions
+                                </label>
+                                <textarea
+                                    value={settings.terms_conditions}
+                                    onChange={(e) =>
+                                        handleChange("terms_conditions", e.target.value)
+                                    }
+                                    rows={10}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none font-mono text-sm"
+                                    placeholder="Terms and conditions..."
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Disclaimer
+                            </label>
+                            <textarea
+                                value={settings.disclaimer}
+                                onChange={(e) =>
+                                    handleChange("disclaimer", e.target.value)
+                                }
+                                rows={4}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none font-mono text-sm"
+                                placeholder="Legal disclaimers..."
+                            />
                         </div>
                     </div>
                 </div>
