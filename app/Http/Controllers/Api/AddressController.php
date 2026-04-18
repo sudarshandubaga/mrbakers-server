@@ -22,7 +22,7 @@ class AddressController extends Controller
             'label' => 'required|in:home,office',
             'address_line1' => 'required|string',
             'city' => 'required|string',
-            'pincode' => 'required|numeric',
+            'pincode' => 'nullable|numeric',
         ]);
 
         $user = $request->user();
