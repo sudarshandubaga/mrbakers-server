@@ -47,22 +47,29 @@
                             <div class="text-5xl mb-4">✅</div>
                             <h2 class="text-2xl font-bold mb-2">Request Submitted</h2>
                             <p class="text-lg opacity-80">{{ session('success') }}</p>
-                            <a href="/" class="mt-8 inline-block bg-green-600 text-white px-8 py-3 rounded-2xl font-bold">Back to Home</a>
+                            <a href="/"
+                                class="mt-8 inline-block bg-green-600 text-white px-8 py-3 rounded-2xl font-bold">Back to
+                                Home</a>
                         </div>
                     @else
-                        <div class="bg-bakery-orange/5 border border-bakery-orange/20 rounded-3xl p-6 mb-8 flex gap-4 items-start">
+                        <div
+                            class="bg-bakery-orange/5 border border-bakery-orange/20 rounded-3xl p-6 mb-8 flex gap-4 items-start">
                             <span class="text-2xl mt-1">⚠️</span>
                             <div>
                                 <h3 class="font-bold text-bakery-orange text-lg">Permanent Action</h3>
-                                <p class="text-gray-600">Deleting your account will permanently remove your profile, order history, and saved addresses. This action cannot be undone.</p>
+                                <p class="text-gray-600">Deleting your account will permanently remove your profile, order
+                                    history, and saved addresses. This action cannot be undone.</p>
                             </div>
                         </div>
 
                         <form action="{{ route('account.delete.request') }}" method="POST" class="space-y-6">
                             @csrf
                             <div>
-                                <label for="phone" class="block text-sm font-bold text-gray-700 uppercase tracking-widest mb-2">Phone Number</label>
-                                <input type="text" id="phone" name="phone" value="{{ old('phone') }}" required placeholder="Enter your registered phone number"
+                                <label for="phone"
+                                    class="block text-sm font-bold text-gray-700 uppercase tracking-widest mb-2">Phone
+                                    Number</label>
+                                <input type="text" id="phone" name="phone" value="{{ old('phone') }}" required
+                                    placeholder="Enter your registered phone number"
                                     class="w-full bg-cream-50 border-2 border-transparent focus:border-bakery-orange focus:ring-0 rounded-2xl p-4 text-lg transition-all @error('phone') border-red-500 @enderror">
                                 @error('phone')
                                     <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
@@ -70,7 +77,9 @@
                             </div>
 
                             <div>
-                                <label for="reason" class="block text-sm font-bold text-gray-700 uppercase tracking-widest mb-2">Reason (Optional)</label>
+                                <label for="reason"
+                                    class="block text-sm font-bold text-gray-700 uppercase tracking-widest mb-2">Reason
+                                    (Optional)</label>
                                 <select id="reason" name="reason"
                                     class="w-full bg-cream-50 border-2 border-transparent focus:border-bakery-orange focus:ring-0 rounded-2xl p-4 text-lg transition-all">
                                     <option value="" disabled selected>Select a reason</option>
@@ -85,7 +94,8 @@
                                 <input type="checkbox" id="confirm" name="confirm" required
                                     class="mt-1 w-6 h-6 text-bakery-orange border-gray-300 rounded focus:ring-bakery-orange">
                                 <label for="confirm" class="text-gray-600 leading-tight">
-                                    I understand that all my data will be permanently deleted and I will no longer have access to my order history.
+                                    I understand that all my data will be permanently deleted and I will no longer have
+                                    access to my order history.
                                 </label>
                             </div>
                             @error('confirm')
@@ -103,7 +113,8 @@
 
             <!-- Footer links -->
             <div class="text-center space-y-4">
-                <p class="text-gray-500">Need help? Contact us at <a href="mailto:support@mrbakers.com" class="text-bakery-orange font-bold underline">support@mrbakers.com</a></p>
+                <p class="text-gray-500">Need help? Contact us at <a href="mailto:support@mrbakersjodhpur.in"
+                        class="text-bakery-orange font-bold underline">support@mrbakersjodhpur.in</a></p>
                 <div class="flex justify-center gap-6 text-sm text-gray-400">
                     <a href="/privacy" class="hover:text-bakery-orange">Privacy Policy</a>
                     <a href="/terms" class="hover:text-bakery-orange">Terms & Conditions</a>

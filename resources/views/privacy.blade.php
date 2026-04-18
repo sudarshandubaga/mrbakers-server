@@ -89,7 +89,7 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold mb-4">Delete Account</h3>
-                            <p>Contact support@mrbakers.com to delete account.</p>
+                            <p>Contact support@mrbakersjodhpur.in to delete account.</p>
                         </div>
                         <div class="md:col-span-2">
                             <h3 class="text-xl font-semibold mb-4">Do Not Track</h3>
@@ -137,7 +137,7 @@
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Contact Us</h2>
                     <div class="flex flex-col md:flex-row gap-8 justify-center items-center mb-8">
                         <div class="text-center">
-                            <p class="text-xl font-semibold text-bakery-brown">support@mrbakers.com</p>
+                            <p class="text-xl font-semibold text-bakery-brown">support@mrbakersjodhpur.in</p>
                             <p class="text-lg text-gray-600">Privacy inquiries</p>
                         </div>
                         <div class="text-center">

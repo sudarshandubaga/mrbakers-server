@@ -107,7 +107,7 @@
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Contact</h2>
                     <div class="flex flex-col md:flex-row gap-8 justify-center items-center mb-8">
                         <div class="text-center">
-                            <p class="text-xl font-semibold text-bakery-brown">support@mrbakers.com</p>
+                            <p class="text-xl font-semibold text-bakery-brown">support@mrbakersjodhpur.in</p>
                         </div>
                         <div class="text-center">
                             <p class="text-xl font-semibold text-bakery-brown">+91 98765 43210</p>

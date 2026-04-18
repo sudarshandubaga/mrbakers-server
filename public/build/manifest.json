@@ -28,7 +28,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-Diuz-ct1.css",
+    "file": "assets/app-x0weKjXl.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -46,7 +46,7 @@
     ]
   },
   "resources/js/mrbakers-admin-router.tsx": {
-    "file": "assets/mrbakers-admin-router-D82c0JSk.js",
+    "file": "assets/mrbakers-admin-router-DCBJ5iX8.js",
     "name": "mrbakers-admin-router",
     "src": "resources/js/mrbakers-admin-router.tsx",
     "isEntry": true,
@@ -58,7 +58,7 @@
       "node_modules/onnxruntime-web/dist/ort.bundle.min.mjs"
     ],
     "css": [
-      "assets/app-Diuz-ct1.css"
+      "assets/app-x0weKjXl.css"
     ]
   }
 }
