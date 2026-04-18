@@ -126,10 +126,12 @@ class LoginController extends Controller
         $request->validate([
             'email' => 'required|email',
             'name' => 'required|string|regex:/^[a-zA-Z ]+$/',
+            'phone' => 'required|numeric|digits:10',
         ]);
 
         $user = User::where('email', $request->email)->firstOrFail();
         $user->first_name = $request->name;
+        $user->phone = $request->phone;
         $user->save();
 
         $token = $user->createToken('user_token')->plainTextToken;
