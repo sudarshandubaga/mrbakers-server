@@ -31,9 +31,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
     const { user } = useSelector((state: RootState) => state.auth);
 
     const onLogout = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("@token");
         dispatch({ type: "LOGOUT" });
-        window.location.href = "/";
+        window.location.href = "/mrbakers-admin";
     };
 
     const navItems = [

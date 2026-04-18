@@ -15,8 +15,8 @@ import { toast } from "react-toastify";
 export const Auth: React.FC = () => {
     const [view, setView] = useState<"LOGIN" | "FORGOT">("LOGIN");
     const [isLoading, setIsLoading] = useState(false);
-    const [email, setEmail] = useState("admin@mrbakersjodhpur.in");
-    const [password, setPassword] = useState("Admin@123");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const dispatch = useDispatch<AppDispatch>();
 
