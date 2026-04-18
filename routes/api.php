@@ -47,6 +47,8 @@ Route::get('/razorpay-keys', function () {
     ]);
 });
 
+Route::get('/settings', [\App\Http\Controllers\Admin\AppSettingController::class, 'index']);
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/home', [HomeController::class, 'index']);
     Route::get('/search', [HomeController::class, 'search']);
