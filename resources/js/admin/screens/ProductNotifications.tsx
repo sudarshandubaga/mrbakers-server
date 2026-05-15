@@ -10,7 +10,7 @@ export const ProductNotifications = () => {
     const fetchNotifications = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await callApi("product-notifications", "GET");
+            const response = await callApi("admin/product-notifications", "GET");
             setNotifications(response);
         } catch (error) {
             console.error("Fetch Notifications Error:", error);
@@ -27,7 +27,7 @@ export const ProductNotifications = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this request?")) return;
         try {
-            const response = await callApi(`product-notifications/${id}`, "DELETE");
+            const response = await callApi(`admin/product-notifications/${id}`, "DELETE");
             if (response.status) {
                 toast.success(response.message);
                 setNotifications(notifications.filter((n) => n.id !== id));
