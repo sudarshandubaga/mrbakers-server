@@ -14,6 +14,7 @@ import { Customers } from "./screens/Customers";
 import { Auth } from "./screens/Auth";
 import { AppSettings } from "./screens/AppSettings";
 import { Profile } from "./screens/Profile";
+import { Vouchers } from "./screens/Vouchers";
 
 import { Menu } from "lucide-react";
 import { Provider, useDispatch, useSelector } from "react-redux";
@@ -101,6 +102,7 @@ function InitApp() {
                             <Route path="/orders" element={<Orders />} />
                             <Route path="/customers" element={<Customers />} />
                             <Route path="/locations" element={<Locations />} />
+                            <Route path="/vouchers" element={<Vouchers />} />
                             <Route path="/settings" element={<AppSettings />} />
                             <Route
                                 path="/profile/edit"

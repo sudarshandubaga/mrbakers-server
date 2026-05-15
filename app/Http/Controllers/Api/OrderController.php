@@ -35,11 +35,17 @@ class OrderController extends Controller
                     'order_number' => $orderNumber,
                     'subtotal' => $request->subtotal,
                     'delivery_fee' => $request->deliveryFee ?? 0,
+                    'discount_amount' => $request->discountAmount ?? 0,
+                    'voucher_id' => $request->voucher_id,
                     'total' => $request->totalAmount,
                     'status' => 'Confirmed',
                     'payment_id' => $request->paymentId,
                     'address_id' => $request->address_id
                 ]);
+
+                if ($request->voucher_id) {
+                    \App\Models\Voucher::where('id', $request->voucher_id)->increment('usage_count');
+                }
 
                 foreach($items as $item) {
                     // Safety check for keys
@@ -85,6 +91,7 @@ class OrderController extends Controller
                 'total' => $order->total,
                 'subtotal' => $order->subtotal,
                 'deliveryFee' => $order->delivery_fee,
+                'discountAmount' => $order->discount_amount,
                 'status' => $order->status,
                 'items' => $order->items->map(function($item) {
                     return [

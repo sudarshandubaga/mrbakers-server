@@ -11,11 +11,18 @@ class Order extends Model
         'order_number',
         'subtotal',
         'delivery_fee',
+        'discount_amount',
+        'voucher_id',
         'total',
         'status',
         'payment_id',
         'address_id'
     ];
+
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class);
+    }
 
     public function user()
     {

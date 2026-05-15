@@ -24,6 +24,8 @@ class OrderController extends Controller
                     'status' => strtoupper($order->status),
                     'subtotal' => (float)$order->subtotal,
                     'delivery_fee' => (float)$order->delivery_fee,
+                    'discount_amount' => (float)$order->discount_amount,
+                    'voucher_code' => $order->voucher->code ?? null,
                     'total' => (float)$order->total,
                     'payment_id' => $order->payment_id,
                     'payment_method' => $order->payment_id ? 'Prepaid (Razorpay)' : 'Cash on Delivery',
