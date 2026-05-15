@@ -17,7 +17,16 @@ class Product extends Model
         'trade_price',
         'main_image',
         'description',
-        'is_bestseller'
+        'is_bestseller',
+        'is_in_stock',
+        'is_active'
+    ];
+
+    protected $casts = [
+        'is_in_stock' => 'boolean',
+        'is_active' => 'boolean',
+        'is_bestseller' => 'boolean',
+        'has_variants' => 'boolean',
     ];
     
     protected $appends = ['in_wishlist', 'cart_qty'];

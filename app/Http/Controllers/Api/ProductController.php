@@ -27,6 +27,7 @@ class ProductController extends Controller
                 'price' => $product->has_variants ? $product->trade_price : $product->regular_price,
                 'regular_price' => $product->regular_price,
                 'trade_price' => $product->trade_price,
+                'is_in_stock' => $product->is_in_stock,
                 'in_wishlist' => $product->in_wishlist,
                 'category' => [
                     'id' => $product->category->id,

@@ -46,6 +46,8 @@ class ProductController extends Controller
 
             "gst_rate"      => "required|numeric|min:0",
             "category_id"   => "required|numeric|exists:categories,id",
+            "is_in_stock"   => "nullable|boolean",
+            "is_active"     => "nullable|boolean",
 
             // Variants (optional)
             "variants"                 => "required_if:has_variants,true|array",
@@ -86,6 +88,8 @@ class ProductController extends Controller
             "description"   => $request->description,
             "has_variants"  => $request->has_variants ?? false,
             "is_bestseller" => $request->is_bestseller ?? false,
+            "is_in_stock"   => $request->is_in_stock ?? true,
+            "is_active"     => $request->is_active ?? true,
         ]);
 
         if ($product->has_variants) {
@@ -134,6 +138,8 @@ class ProductController extends Controller
 
             "gst_rate"      => "required|numeric|min:0",
             "category_id"   => "required|numeric|exists:categories,id",
+            "is_in_stock"   => "nullable|boolean",
+            "is_active"     => "nullable|boolean",
 
             // Variants
             "variants"                 => "required_if:has_variants,true|array",
@@ -179,6 +185,8 @@ class ProductController extends Controller
             "description"   => $request->description,
             "has_variants"  => $request->has_variants ?? false,
             "is_bestseller" => $request->is_bestseller ?? false,
+            "is_in_stock"   => $request->is_in_stock ?? true,
+            "is_active"     => $request->is_active ?? true,
         ];
 
         // If a new base64 image is sent → replace

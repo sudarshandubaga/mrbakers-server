@@ -36,7 +36,8 @@ class HomeController extends Controller
                     'regular_price',
                     'trade_price',
                     'main_image',
-                    'category_id'
+                    'category_id',
+                    'is_in_stock'
                 )
                 ->get()
                 ->map(function ($product) {
@@ -47,6 +48,7 @@ class HomeController extends Controller
                             ? $product->trade_price
                             : $product->regular_price,
                         'image' => $product->main_image,
+                        'is_in_stock' => $product->is_in_stock,
                         'in_wishlist' => $product->in_wishlist,
                         'variants' => $product->variants->map(function ($variant) {
                             return [
@@ -90,7 +92,7 @@ class HomeController extends Controller
             ->get();
 
         $products = Product::where('name', 'like', "%{$query}%")
-            ->select('id', 'name', 'slug', 'main_image', 'trade_price', 'regular_price', 'has_variants')
+            ->select('id', 'name', 'slug', 'main_image', 'trade_price', 'regular_price', 'has_variants', 'is_in_stock')
             ->limit(10)
             ->get()
             ->map(function ($product) {
@@ -99,6 +101,7 @@ class HomeController extends Controller
                     'name' => $product->name,
                     'price' => $product->has_variants ? $product->trade_price : $product->regular_price,
                     'image' => $product->main_image,
+                    'is_in_stock' => $product->is_in_stock,
                     'in_wishlist' => $product->in_wishlist,
                 ];
             });

@@ -26,6 +26,7 @@ export default function AddProduct({
         main_image: null,
         variants: [],
         is_bestseller: false,
+        is_in_stock: true,
     });
 
     const [hasVariants, setHasVariants] = useState(
@@ -82,6 +83,7 @@ export default function AddProduct({
             gst_rate: formData.gst_rate,
             category_id: formData.category_id || null,
             is_bestseller: formData.is_bestseller || false,
+            is_in_stock: formData.is_in_stock ?? true,
         };
 
         if (hasVariants) {
@@ -153,6 +155,7 @@ export default function AddProduct({
                 main_image: null,
                 variants: [],
                 is_bestseller: false,
+                is_in_stock: true,
             });
         }
     }, [editingProduct]);
@@ -313,6 +316,43 @@ export default function AddProduct({
                                 />
                                 <span className="text-sm font-medium text-gray-700">
                                     Mark as Bestseller
+                                </span>
+                            </div>
+
+                            {/* In Stock Toggle */}
+                            <div className="flex items-center gap-2 py-2">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setFormData({
+                                            ...formData,
+                                            is_in_stock: !formData.is_in_stock,
+                                        })
+                                    }
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                        formData.is_in_stock
+                                            ? "bg-green-500"
+                                            : "bg-gray-200"
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                                            formData.is_in_stock
+                                                ? "translate-x-6"
+                                                : "translate-x-1"
+                                        }`}
+                                    />
+                                </button>
+                                <Layers
+                                    size={16}
+                                    className={`${
+                                        formData.is_in_stock
+                                            ? "text-green-500"
+                                            : "text-gray-400"
+                                    }`}
+                                />
+                                <span className="text-sm font-medium text-gray-700">
+                                    Product is In Stock
                                 </span>
                             </div>
 

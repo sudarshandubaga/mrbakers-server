@@ -26,6 +26,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             'orders' => \App\Http\Controllers\Admin\OrderController::class,
             'customers' => \App\Http\Controllers\Admin\CustomerController::class,
             'vouchers' => \App\Http\Controllers\Admin\VoucherController::class,
+            'product-notifications' => \App\Http\Controllers\Admin\ProductNotificationController::class,
         ]);
         
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index']);
@@ -59,6 +60,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         'wishlist' => WishlistController::class
     ]);
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle']);
+    Route::post('/notify-me', [\App\Http\Controllers\Api\ProductNotificationController::class, 'store']);
 
     Route::post('/place-order', [App\Http\Controllers\Api\OrderController::class, 'placeOrder']);
     Route::post('/validate-voucher', [App\Http\Controllers\Api\VoucherController::class, 'validateVoucher']);

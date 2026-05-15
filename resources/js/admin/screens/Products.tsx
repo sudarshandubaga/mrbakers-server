@@ -212,6 +212,11 @@ export const Products: React.FC = () => {
                                                                 Bestseller
                                                             </span>
                                                         )}
+                                                        {!product.is_in_stock && (
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">
+                                                                Out of Stock
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <div className="text-xs text-gray-500 truncate max-w-[200px]">
                                                         {product.description}

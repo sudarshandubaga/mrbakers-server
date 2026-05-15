@@ -14,6 +14,7 @@ import {
     User as UserIcon,
     Lock,
     Ticket,
+    Bell,
 } from "lucide-react";
 import { SITE_INFO } from "../utils/constants.utils";
 import { useSelector, useDispatch } from "react-redux";
@@ -44,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
         { path: "/orders", label: "Orders", icon: ShoppingCart },
         { path: "/customers", label: "Customers", icon: Users },
         { path: "/vouchers", label: "Promo Codes", icon: Ticket },
+        { path: "/notifications", label: "Notifications", icon: Bell },
         { path: "/settings", label: "App Settings", icon: Settings },
     ];
 
