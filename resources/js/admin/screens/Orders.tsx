@@ -1,27 +1,128 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Order, OrderStatus } from "../../types";
 import { Clock, CheckCircle2, Truck, Package, XCircle, Loader2, ShoppingCart, Phone, MapPin, CreditCard, ExternalLink, ChevronDown, ChevronUp, Eye, X } from "lucide-react";
 import callApi from "../services";
 import { toast } from "react-toastify";
 
+class AlarmSound {
+    private audioCtx: AudioContext | null = null;
+    private intervalId: any = null;
+
+    start() {
+        if (this.intervalId) return;
+        const playTone = () => {
+            try {
+                if (!this.audioCtx) {
+                    this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+                }
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, this.audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.3, this.audioCtx.currentTime);
+                
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.4);
+                osc.stop(this.audioCtx.currentTime + 0.4);
+            } catch (e) {
+                console.error("Web Audio failed:", e);
+            }
+        };
+
+        // Play double beep every 1.5 seconds
+        this.intervalId = setInterval(() => {
+            playTone();
+            setTimeout(playTone, 150);
+        }, 1500);
+    }
+
+    stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    }
+}
+
+const alarm = new AlarmSound();
+
 export const Orders: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [newOrderAlert, setNewOrderAlert] = useState<Order | null>(null);
+    
+    const knownOrderIds = useRef<Set<string | number>>(new Set());
+    const isFirstFetch = useRef(true);
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (isPoll = false) => {
         try {
             const data = await callApi("admin/orders");
+            
+            if (data && data.length > 0) {
+                const currentIds = data.map((o: any) => o.id);
+                
+                if (!isFirstFetch.current) {
+                    // Check if there is any new order in PENDING status
+                    const newPendingOrder = data.find((o: any) => 
+                        o.status === "PENDING" && !knownOrderIds.current.has(o.id)
+                    );
+                    
+                    if (newPendingOrder) {
+                        setNewOrderAlert(newPendingOrder);
+                        alarm.start();
+                        
+                        // Trigger HTML5 Web Notification
+                        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+                            const notif = new Notification("New Order Received!", {
+                                body: `Order ${newPendingOrder.order_number || newPendingOrder.id} has been placed by ${newPendingOrder.customerName}.`,
+                                tag: "new-order",
+                                requireInteraction: true
+                            });
+                            notif.onclick = () => {
+                                window.focus();
+                            };
+                        }
+                    }
+                }
+                
+                // Add all IDs to known set
+                currentIds.forEach((id: any) => knownOrderIds.current.add(id));
+                isFirstFetch.current = false;
+            }
+            
             setOrders(data);
         } catch (error) {
-            toast.error("Failed to fetch orders");
+            if (!isPoll) {
+                toast.error("Failed to fetch orders");
+            }
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
+        // Request notification permissions
+        if (typeof Notification !== "undefined" && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+
         fetchOrders();
+
+        const interval = setInterval(() => {
+            fetchOrders(true);
+        }, 10000); // poll every 10 seconds
+
+        return () => {
+            clearInterval(interval);
+            alarm.stop();
+        };
     }, []);
 
     const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
@@ -372,6 +473,49 @@ export const Orders: React.FC = () => {
                                     </button>
                                 )}
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* New Order Alert Modal (Ringing) */}
+            {newOrderAlert && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-8 text-center animate-in zoom-in-95 duration-200 border-4 border-bakery-600">
+                        <div className="w-20 h-20 bg-bakery-50 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                            <Clock className="text-bakery-600 w-10 h-10 animate-pulse" />
+                        </div>
+                        <h2 className="text-2xl font-black text-gray-900 mb-2 animate-pulse">
+                            🔔 NEW ORDER RECEIVED!
+                        </h2>
+                        <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+                            Order Number: <strong className="text-bakery-600 font-mono">{newOrderAlert.order_number || `#${newOrderAlert.id}`}</strong>
+                            <br />
+                            Customer: <strong>{newOrderAlert.customerName}</strong>
+                            <br />
+                            Total: <strong className="text-gray-900">₹{newOrderAlert.total.toFixed(2)}</strong>
+                        </p>
+                        
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => {
+                                    alarm.stop();
+                                    setNewOrderAlert(null);
+                                }}
+                                className="flex-1 py-3 px-6 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-xs uppercase tracking-widest transition-all"
+                            >
+                                Dismiss
+                            </button>
+                            <button
+                                onClick={() => {
+                                    alarm.stop();
+                                    setSelectedOrder(newOrderAlert);
+                                    setNewOrderAlert(null);
+                                }}
+                                className="flex-1 py-3 px-6 rounded-2xl bg-bakery-600 text-white hover:bg-bakery-700 font-black text-xs uppercase tracking-widest shadow-xl shadow-bakery-100 transition-all"
+                            >
+                                View Order
+                            </button>
                         </div>
                     </div>
                 </div>

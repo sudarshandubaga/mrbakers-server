@@ -72,6 +72,7 @@ export interface Order {
     order_number?: string;
     customerName: string;
     customerPhone: string;
+    customerEmail?: string;
     items: OrderItem[];
     subtotal: number;
     delivery_fee: number;
@@ -79,6 +80,7 @@ export interface Order {
     status: OrderStatus;
     timestamp: string;
     payment_method?: string;
+    payment_id?: string;
     address?: {
         label: string;
         address_line1: string;
@@ -86,6 +88,8 @@ export interface Order {
         landmark?: string;
         city: string;
         pincode: string;
+        lat?: number | string;
+        lng?: number | string;
     };
 }
 

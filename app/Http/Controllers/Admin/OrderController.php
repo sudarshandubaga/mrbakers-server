@@ -21,7 +21,7 @@ class OrderController extends Controller
                     'customerEmail' => $order->user->email ?? 'N/A',
                     'customerPhone' => $order->user->phone ?? 'N/A',
                     'timestamp' => $order->created_at->toISOString(),
-                    'status' => strtoupper($order->status),
+                    'status' => strtolower($order->status) === 'confirmed' ? 'PENDING' : strtoupper($order->status),
                     'subtotal' => (float)$order->subtotal,
                     'delivery_fee' => (float)$order->delivery_fee,
                     'discount_amount' => (float)$order->discount_amount,
