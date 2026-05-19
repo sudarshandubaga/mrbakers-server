@@ -27,7 +27,7 @@ class OrderController extends Controller
             $now = \Carbon\Carbon::now()->format('H:i:s');
             $from = $settings->order_from_time;
             $to = $settings->order_to_time;
-            
+
             $isAllowed = false;
             if ($from <= $to) {
                 $isAllowed = ($now >= $from && $now <= $to);
@@ -45,12 +45,12 @@ class OrderController extends Controller
 
         $user = $request->user();
         $items = $request->items;
-        
+
         // Generate Order number
         $orderNumber = 'ORD-' . strtoupper(Str::random(6));
 
         try {
-            return \Illuminate\Support\Facades\DB::transaction(function() use ($request, $user, $orderNumber, $items) {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $user, $orderNumber, $items) {
                 $order = Order::create([
                     'user_id' => $user->id,
                     'order_number' => $orderNumber,
@@ -68,10 +68,10 @@ class OrderController extends Controller
                     \App\Models\Voucher::where('id', $request->voucher_id)->increment('usage_count');
                 }
 
-                foreach($items as $item) {
+                foreach ($items as $item) {
                     // Safety check for keys
                     $productId = $item['productId'] ?? ($item['id'] ?? null);
-                    
+
                     if (!$productId) {
                         throw new \Exception("Missing product ID for item: " . ($item['name'] ?? 'Unknown'));
                     }
@@ -104,8 +104,8 @@ class OrderController extends Controller
     public function history(Request $request)
     {
         $user = $request->user();
-        
-        $orders = Order::with('items')->where('user_id', $user->id)->orderBy('id', 'desc')->get()->map(function($order) {
+
+        $orders = Order::with('items')->where('user_id', $user->id)->orderBy('id', 'desc')->get()->map(function ($order) {
             return [
                 'id' => $order->order_number,
                 'date' => $order->created_at->format('j F Y'),
@@ -114,7 +114,7 @@ class OrderController extends Controller
                 'deliveryFee' => $order->delivery_fee,
                 'discountAmount' => $order->discount_amount,
                 'status' => $order->status,
-                'items' => $order->items->map(function($item) {
+                'items' => $order->items->map(function ($item) {
                     return [
                         'name' => $item->product_name,
                         'variantName' => $item->variant_name,
@@ -138,7 +138,7 @@ class OrderController extends Controller
             $now = \Carbon\Carbon::now()->format('H:i:s');
             $from = $settings->order_from_time;
             $to = $settings->order_to_time;
-            
+
             $isAllowed = false;
             if ($from <= $to) {
                 $isAllowed = ($now >= $from && $now <= $to);
@@ -161,7 +161,7 @@ class OrderController extends Controller
     }
     public function testCheckout(Request $request)
     {
-        $user = \App\Models\User::where('role', 'user')->first();
+        $user = \App\Models\User::where('role', 'customer')->first();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'No regular users found for testing']);
         }
@@ -175,7 +175,7 @@ class OrderController extends Controller
 
         $orderNumber = 'TEST-ORD-' . strtoupper(Str::random(6));
 
-        return \Illuminate\Support\Facades\DB::transaction(function() use ($user, $address, $product, $orderNumber) {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($user, $address, $product, $orderNumber) {
             $order = Order::create([
                 'user_id' => $user->id,
                 'order_number' => $orderNumber,
