@@ -87,9 +87,12 @@ class OrderController extends Controller
                     ]);
                 }
 
+                $orderLoaded = $order->load('items');
+                \App\Services\FcmService::sendOrderNotification($orderLoaded);
+
                 return response()->json([
                     'success' => true,
-                    'order' => $order->load('items')
+                    'order' => $orderLoaded
                 ]);
             });
         } catch (\Exception $e) {
@@ -197,10 +200,13 @@ class OrderController extends Controller
                 'price' => $price,
             ]);
 
+            $orderLoaded = $order->load('items');
+            \App\Services\FcmService::sendOrderNotification($orderLoaded);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Test order placed successfully.',
-                'order' => $order->load('items')
+                'order' => $orderLoaded
             ]);
         });
     }
