@@ -159,4 +159,48 @@ class OrderController extends Controller
             'message' => 'Ordering is available.'
         ]);
     }
+    public function testCheckout(Request $request)
+    {
+        $user = \App\Models\User::where('role', 'user')->first();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'No regular users found for testing']);
+        }
+
+        $address = \App\Models\UserAddress::where('user_id', $user->id)->first();
+        $product = \App\Models\Product::first();
+
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'No products found']);
+        }
+
+        $orderNumber = 'TEST-ORD-' . strtoupper(Str::random(6));
+
+        return \Illuminate\Support\Facades\DB::transaction(function() use ($user, $address, $product, $orderNumber) {
+            $order = Order::create([
+                'user_id' => $user->id,
+                'order_number' => $orderNumber,
+                'subtotal' => $product->price,
+                'delivery_fee' => 40,
+                'discount_amount' => 0,
+                'total' => $product->price + 40,
+                'status' => 'Confirmed',
+                'payment_id' => 'pay_test_' . Str::random(10),
+                'address_id' => $address ? $address->id : null
+            ]);
+
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'qty' => 1,
+                'price' => $product->price,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test order placed successfully.',
+                'order' => $order->load('items')
+            ]);
+        });
+    }
 }
