@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/notify-me', [\App\Http\Controllers\Api\ProductNotificationController::class, 'store']);
 
     Route::post('/place-order', [App\Http\Controllers\Api\OrderController::class, 'placeOrder']);
+    Route::get('/check-order-status', [App\Http\Controllers\Api\OrderController::class, 'checkOrderStatus']);
     Route::post('/validate-voucher', [App\Http\Controllers\Api\VoucherController::class, 'validateVoucher']);
     Route::get('/order-history', [App\Http\Controllers\Api\OrderController::class, 'history']);
 

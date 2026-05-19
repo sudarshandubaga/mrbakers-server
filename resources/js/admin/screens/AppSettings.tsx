@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Save, Loader2, Store, Smartphone, Mail, Phone, FileText } from "lucide-react";
+import { Save, Loader2, Store, Smartphone, Mail, Phone, FileText, Clock } from "lucide-react";
 import callApi from "../services";
 import { toast } from "react-toastify";
 
@@ -15,6 +15,9 @@ export const AppSettings: React.FC = () => {
         privacy_policy: "",
         terms_conditions: "",
         disclaimer: "",
+        order_from_time: "",
+        order_to_time: "",
+        order_disabled_message: "",
     });
 
     const fetchSettings = async () => {
@@ -30,6 +33,9 @@ export const AppSettings: React.FC = () => {
                     privacy_policy: data.privacy_policy || "",
                     terms_conditions: data.terms_conditions || "",
                     disclaimer: data.disclaimer || "",
+                    order_from_time: data.order_from_time || "",
+                    order_to_time: data.order_to_time || "",
+                    order_disabled_message: data.order_disabled_message || "",
                 });
             }
         } catch (error) {
@@ -168,6 +174,58 @@ export const AppSettings: React.FC = () => {
                                     placeholder="+91 12345 67890"
                                 />
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Ordering Time Settings */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                        <Clock className="text-bakery-600" size={20} />
+                        <h2 className="font-semibold text-gray-900">
+                            Ordering Time Settings
+                        </h2>
+                    </div>
+                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Order From Time
+                            </label>
+                            <input
+                                type="time"
+                                value={settings.order_from_time}
+                                onChange={(e) =>
+                                    handleChange("order_from_time", e.target.value)
+                                }
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Order To Time
+                            </label>
+                            <input
+                                type="time"
+                                value={settings.order_to_time}
+                                onChange={(e) =>
+                                    handleChange("order_to_time", e.target.value)
+                                }
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Order Disabled Message
+                            </label>
+                            <input
+                                type="text"
+                                value={settings.order_disabled_message}
+                                onChange={(e) =>
+                                    handleChange("order_disabled_message", e.target.value)
+                                }
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                                placeholder="e.g. Sorry, we are currently not accepting orders."
+                            />
                         </div>
                     </div>
                 </div>

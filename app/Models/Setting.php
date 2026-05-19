@@ -14,6 +14,9 @@ class Setting extends Model
         'help_support',
         'privacy_policy',
         'terms_conditions',
-        'disclaimer'
+        'disclaimer',
+        'order_from_time',
+        'order_to_time',
+        'order_disabled_message'
     ];
 }

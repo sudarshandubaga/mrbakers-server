@@ -22,6 +22,27 @@ class OrderController extends Controller
             'paymentId' => 'required'
         ]);
 
+        $settings = \App\Models\Setting::first();
+        if ($settings && $settings->order_from_time && $settings->order_to_time) {
+            $now = \Carbon\Carbon::now()->format('H:i:s');
+            $from = $settings->order_from_time;
+            $to = $settings->order_to_time;
+            
+            $isAllowed = false;
+            if ($from <= $to) {
+                $isAllowed = ($now >= $from && $now <= $to);
+            } else {
+                $isAllowed = ($now >= $from || $now <= $to);
+            }
+
+            if (!$isAllowed) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $settings->order_disabled_message ?: 'Orders are currently not accepted at this time.'
+                ], 400);
+            }
+        }
+
         $user = $request->user();
         $items = $request->items;
         
@@ -107,6 +128,35 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'orders' => $orders
+        ]);
+    }
+
+    public function checkOrderStatus(Request $request)
+    {
+        $settings = \App\Models\Setting::first();
+        if ($settings && $settings->order_from_time && $settings->order_to_time) {
+            $now = \Carbon\Carbon::now()->format('H:i:s');
+            $from = $settings->order_from_time;
+            $to = $settings->order_to_time;
+            
+            $isAllowed = false;
+            if ($from <= $to) {
+                $isAllowed = ($now >= $from && $now <= $to);
+            } else {
+                $isAllowed = ($now >= $from || $now <= $to);
+            }
+
+            if (!$isAllowed) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $settings->order_disabled_message ?: 'Orders are currently not accepted at this time.'
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ordering is available.'
         ]);
     }
 }

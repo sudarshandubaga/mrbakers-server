@@ -38,6 +38,9 @@ class AppSettingController extends Controller
         $settings->privacy_policy = $request->privacy_policy;
         $settings->terms_conditions = $request->terms_conditions;
         $settings->disclaimer = $request->disclaimer;
+        $settings->order_from_time = $request->order_from_time;
+        $settings->order_to_time = $request->order_to_time;
+        $settings->order_disabled_message = $request->order_disabled_message;
         $settings->save();
 
         return response()->json(['success' => true, 'settings' => $settings]);
