@@ -53,6 +53,7 @@ Route::get('/settings', [\App\Http\Controllers\Admin\AppSettingController::class
 Route::get('/test-checkout', [App\Http\Controllers\Api\OrderController::class, 'testCheckout']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('/update-fcm-token', [LoginController::class, 'updateFcmToken']);
     Route::get('/home', [HomeController::class, 'index']);
     Route::get('/search', [HomeController::class, 'search']);
     Route::get('/product/{id}', [App\Http\Controllers\Api\ProductController::class, 'show']);

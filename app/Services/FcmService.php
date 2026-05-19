@@ -23,24 +23,37 @@ class FcmService
 
         try {
             $customerName = $order->user->name ?? 'Guest';
-            $payload = [
-                'to' => '/topics/admin-orders',
-                'priority' => 'high',
-                'notification' => [
-                    'title' => '🔔 New Order Received!',
-                    'body' => "Order " . ($order->order_number ?: $order->id) . " placed by " . $customerName . " for ₹" . $order->total . ".",
-                    'sound' => 'alarm',
-                    'android_channel_id' => 'orders',
-                ],
-                'data' => [
-                    'order_id' => (string) $order->id,
-                    'order_number' => (string) ($order->order_number ?: ''),
-                    'customerName' => (string) $customerName,
-                    'total' => (string) $order->total,
-                    'status' => (string) $order->status,
-                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK', // For background click handling
-                ],
+            
+            // Get all admin users with registered FCM tokens
+            $tokens = \App\Models\User::where('role', 'admin')
+                ->whereNotNull('fcm_token')
+                ->where('fcm_token', '!=', '')
+                ->pluck('fcm_token')
+                ->toArray();
+
+            // Structure data payload (Data-only payload to force app wakeup and custom alarm play)
+            $dataPayload = [
+                'order_id' => (string) $order->id,
+                'order_number' => (string) ($order->order_number ?: ''),
+                'customerName' => (string) $customerName,
+                'total' => (string) $order->total,
+                'status' => (string) $order->status,
+                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
             ];
+
+            $payload = [
+                'priority' => 'high',
+                'data' => $dataPayload,
+            ];
+
+            if (!empty($tokens)) {
+                // Send to direct devices
+                $payload['registration_ids'] = $tokens;
+            } else {
+                // Fallback to topic
+                Log::info('No admin tokens found in database. Falling back to admin-orders topic.');
+                $payload['to'] = '/topics/admin-orders';
+            }
 
             $response = Http::withHeaders([
                 'Authorization' => 'key=' . $serverKey,
@@ -48,7 +61,7 @@ class FcmService
             ])->post('https://fcm.googleapis.com/fcm/send', $payload);
 
             if ($response->successful()) {
-                Log::info('FCM order notification sent successfully.');
+                Log::info('FCM order notification sent successfully. Target tokens count: ' . count($tokens));
                 return true;
             } else {
                 Log::error('FCM order notification failed: ' . $response->body());
