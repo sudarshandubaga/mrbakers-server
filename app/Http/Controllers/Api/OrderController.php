@@ -176,13 +176,14 @@ class OrderController extends Controller
         $orderNumber = 'TEST-ORD-' . strtoupper(Str::random(6));
 
         return \Illuminate\Support\Facades\DB::transaction(function () use ($user, $address, $product, $orderNumber) {
+            $price = $product->regular_price ?? 100;
             $order = Order::create([
                 'user_id' => $user->id,
                 'order_number' => $orderNumber,
-                'subtotal' => $product->price,
+                'subtotal' => $price,
                 'delivery_fee' => 40,
                 'discount_amount' => 0,
-                'total' => $product->price + 40,
+                'total' => $price + 40,
                 'status' => 'Confirmed',
                 'payment_id' => 'pay_test_' . Str::random(10),
                 'address_id' => $address ? $address->id : null
@@ -193,7 +194,7 @@ class OrderController extends Controller
                 'product_id' => $product->id,
                 'product_name' => $product->name,
                 'qty' => 1,
-                'price' => $product->price,
+                'price' => $price,
             ]);
 
             return response()->json([
