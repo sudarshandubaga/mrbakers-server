@@ -69,18 +69,16 @@ class FcmService
                     $messagePayload = [
                         'message' => [
                             'token' => $token,
-                            'notification' => [
-                                'title' => $title,
-                                'body' => $body,
-                            ],
+                            // Data-only message (no notification block) so Android calls our handler
+                            // even when the app is in background/killed
                             'android' => [
                                 'priority' => 'high',
-                                'notification' => [
-                                    'sound' => 'alarm',
-                                    'channel_id' => 'orders',
-                                ],
                             ],
-                            'data' => $dataPayload,
+                            'data' => array_merge($dataPayload, [
+                                'title' => $title,
+                                'body' => $body,
+                                'is_incoming_order' => 'true',
+                            ]),
                         ]
                     ];
 
@@ -103,18 +101,16 @@ class FcmService
                 $messagePayload = [
                     'message' => [
                         'topic' => 'admin-orders',
-                        'notification' => [
-                            'title' => $title,
-                            'body' => $body,
-                        ],
+                        // Data-only message (no notification block) so Android calls our handler
+                        // even when the app is in background/killed
                         'android' => [
                             'priority' => 'high',
-                            'notification' => [
-                                'sound' => 'alarm',
-                                'channel_id' => 'orders',
-                            ],
                         ],
-                        'data' => $dataPayload,
+                        'data' => array_merge($dataPayload, [
+                            'title' => $title,
+                            'body' => $body,
+                            'is_incoming_order' => 'true',
+                        ]),
                     ]
                 ];
 
