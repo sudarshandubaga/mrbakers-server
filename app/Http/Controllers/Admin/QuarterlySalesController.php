@@ -10,64 +10,83 @@ class QuarterlySalesController extends Controller
 {
     public function index()
     {
-        $results = [];
-
         // Get all non-cancelled orders
         $orders = Order::where('status', '!=', 'cancelled')
             ->orderBy('created_at', 'asc')
             ->get(['total', 'created_at']);
 
-        // Group by year and quarter
-        $grouped = [];
+        // Group by year → quarter → month
+        $years = [];
+        $monthLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
         foreach ($orders as $order) {
             $date = Carbon::parse($order->created_at);
             $year = $date->year;
             $month = $date->month;
             $quarter = (int)ceil($month / 3);
+            $monthName = $date->format('F');
 
-            $key = "$year-Q$quarter";
-            if (!isset($grouped[$key])) {
-                $grouped[$key] = [
-                    'year' => $year,
+            if (!isset($years[$year])) {
+                $years[$year] = [];
+            }
+
+            $qKey = "Q$quarter";
+            if (!isset($years[$year][$qKey])) {
+                $quarterStartIndex = ($quarter - 1) * 3;
+                $quarterMonths = array_slice($monthLabels, $quarterStartIndex, 3);
+                $years[$year][$qKey] = [
+                    'label' => "Q$quarter. {$quarterMonths[0]} to {$quarterMonths[2]}",
                     'quarter' => $quarter,
                     'months' => [],
                 ];
             }
 
-            $monthKey = $date->format('F');
-            if (!isset($grouped[$key]['months'][$monthKey])) {
-                $grouped[$key]['months'][$monthKey] = 0;
+            if (!isset($years[$year][$qKey]['months'][$monthName])) {
+                $years[$year][$qKey]['months'][$monthName] = 0;
             }
-            $grouped[$key]['months'][$monthKey] += (float)$order->total;
+            $years[$year][$qKey]['months'][$monthName] += (float)$order->total;
         }
 
-        // Month labels for each quarter
-        $monthLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        // Build response: years sorted descending
+        krsort($years);
+        $results = [];
 
-        // Sort by year desc, quarter desc (newest first)
-        krsort($grouped);
+        foreach ($years as $year => $quarters) {
+            $yearlyTotal = 0;
+            $quarterList = [];
 
-        foreach ($grouped as $key => $data) {
-            $quarterStartIndex = ($data['quarter'] - 1) * 3;
-            $quarterMonths = array_slice($monthLabels, $quarterStartIndex, 3);
+            // Sort quarters ascending (Q1 → Q4)
+            ksort($quarters);
 
-            $monthly = [];
-            $quarterTotal = 0;
-            foreach ($quarterMonths as $month) {
-                $amount = $data['months'][$month] ?? 0;
-                $monthly[] = [
-                    'name' => $month,
-                    'amount' => $amount,
+            foreach ($quarters as $qKey => $qData) {
+                $quarterTotal = 0;
+                $monthList = [];
+
+                foreach ($monthLabels as $monthName) {
+                    $amount = $qData['months'][$monthName] ?? 0;
+                    if ($amount > 0) {
+                        $monthList[] = [
+                            'name' => $monthName,
+                            'amount' => $amount,
+                        ];
+                    }
+                    $quarterTotal += $amount;
+                }
+
+                $quarterList[] = [
+                    'label' => $qData['label'],
+                    'quarter' => $qData['quarter'],
+                    'total' => $quarterTotal,
+                    'months' => $monthList,
                 ];
-                $quarterTotal += $amount;
+
+                $yearlyTotal += $quarterTotal;
             }
 
             $results[] = [
-                'label' => "Q{$data['quarter']}. {$quarterMonths[0]} to {$quarterMonths[2]}",
-                'year' => $data['year'],
-                'quarter' => $data['quarter'],
-                'total' => $quarterTotal,
-                'months' => $monthly,
+                'year' => $year,
+                'total' => $yearlyTotal,
+                'quarters' => $quarterList,
             ];
         }
 
