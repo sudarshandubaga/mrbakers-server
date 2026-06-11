@@ -12,10 +12,22 @@ class OrderController extends Controller
     {
         $query = Order::with(['items', 'user', 'address']);
 
-        // Filter by status if provided
+        // Map UI statuses to database statuses
+        // UI uses 'pending' but DB stores 'Confirmed' for new orders
         if ($request->filled('status')) {
             $statuses = explode(',', $request->status);
-            $query->whereIn('status', $statuses);
+            $dbStatuses = [];
+            foreach ($statuses as $s) {
+                $s = trim(strtolower($s));
+                if ($s === 'pending') {
+                    $dbStatuses[] = 'Confirmed';
+                } elseif ($s === 'processing') {
+                    $dbStatuses[] = 'Processing';
+                } else {
+                    $dbStatuses[] = ucfirst($s);
+                }
+            }
+            $query->whereIn('status', $dbStatuses);
         }
 
         $orders = $query->orderBy('id', 'desc')
