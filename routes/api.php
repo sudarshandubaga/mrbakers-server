@@ -28,8 +28,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             'vouchers' => \App\Http\Controllers\Admin\VoucherController::class,
             'product-notifications' => \App\Http\Controllers\Admin\ProductNotificationController::class,
         ]);
-        
+
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index']);
+        Route::get('/quarterly-sales', [\App\Http\Controllers\Admin\QuarterlySalesController::class, 'index']);
         Route::get('/settings', [\App\Http\Controllers\Admin\AppSettingController::class, 'index']);
         Route::post('/settings', [\App\Http\Controllers\Admin\AppSettingController::class, 'update']);
         Route::post('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus']);
