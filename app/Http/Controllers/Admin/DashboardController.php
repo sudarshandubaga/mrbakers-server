@@ -46,6 +46,13 @@ class DashboardController extends Controller
             return round((($current - $previous) / $previous) * 100, 1);
         };
 
+        // Today's stats (for admin profile dashboard)
+        $todayStart = Carbon::today();
+        $todayEnd = Carbon::now();
+        $todayOrders = Order::whereBetween('created_at', [$todayStart, $todayEnd]);
+        $todaySales = (float)(clone $todayOrders)->where('status', '!=', 'cancelled')->sum('total');
+        $todayOrderCount = $todayOrders->count();
+
         $stats = [
             'total_revenue' => [
                 'value' => (float)Order::where('status', '!=', 'cancelled')->sum('total'),
@@ -53,7 +60,7 @@ class DashboardController extends Controller
             ],
             'active_orders' => [
                 'value' => Order::where('status', 'pending')->count(),
-                'trend' => null // Trend for active orders might not be as meaningful as revenue
+                'trend' => null
             ],
             'delivered_orders' => [
                 'value' => Order::where('status', 'delivered')->count(),
@@ -63,6 +70,8 @@ class DashboardController extends Controller
                 'value' => User::where('role', 'customer')->count(),
                 'trend' => $calculateTrend($currentNewUsers, $prevNewUsers)
             ],
+            'today_sales' => (float)$todaySales,
+            'today_orders' => $todayOrderCount,
         ];
 
         // Weekly Revenue Data (Last 7 days)
@@ -72,7 +81,7 @@ class DashboardController extends Controller
             $revenue = Order::whereDate('created_at', $date)
                 ->where('status', '!=', 'cancelled')
                 ->sum('total');
-            
+
             $weekly_revenue[] = [
                 'name' => $date->format('D'),
                 'sales' => (float)$revenue
