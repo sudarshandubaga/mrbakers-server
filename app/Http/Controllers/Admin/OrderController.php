@@ -8,12 +8,19 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['items', 'user', 'address'])
-            ->orderBy('id', 'desc')
+        $query = Order::with(['items', 'user', 'address']);
+
+        // Filter by status if provided
+        if ($request->filled('status')) {
+            $statuses = explode(',', $request->status);
+            $query->whereIn('status', $statuses);
+        }
+
+        $orders = $query->orderBy('id', 'desc')
             ->get()
-            ->map(function($order) {
+            ->map(function ($order) {
                 return [
                     'id' => $order->id,
                     'order_number' => $order->order_number,
@@ -39,7 +46,7 @@ class OrderController extends Controller
                         'lat' => $order->address->latitude,
                         'lng' => $order->address->longitude,
                     ] : null,
-                    'items' => $order->items->map(function($item) {
+                    'items' => $order->items->map(function ($item) {
                         return [
                             'name' => $item->product_name . ($item->variant_name ? " ($item->variant_name)" : ""),
                             'quantity' => (int)$item->qty,
