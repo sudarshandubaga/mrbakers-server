@@ -61,7 +61,8 @@ class OrderController extends Controller
                     'total' => $request->totalAmount,
                     'status' => 'Confirmed',
                     'payment_id' => $request->paymentId,
-                    'address_id' => $request->address_id
+                    'address_id' => $request->address_id,
+                    'notes' => $request->notes
                 ]);
 
                 if ($request->voucher_id) {
@@ -117,6 +118,7 @@ class OrderController extends Controller
                 'deliveryFee' => $order->delivery_fee,
                 'discountAmount' => $order->discount_amount,
                 'status' => $order->status,
+                'notes' => $order->notes,
                 'items' => $order->items->map(function ($item) {
                     return [
                         'name' => $item->product_name,

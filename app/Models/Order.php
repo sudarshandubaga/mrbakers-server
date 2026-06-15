@@ -16,7 +16,8 @@ class Order extends Model
         'total',
         'status',
         'payment_id',
-        'address_id'
+        'address_id',
+        'notes'
     ];
 
     public function voucher()

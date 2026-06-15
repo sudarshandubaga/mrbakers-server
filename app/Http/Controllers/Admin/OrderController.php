@@ -46,6 +46,7 @@ class OrderController extends Controller
                     'discount_amount' => (float)$order->discount_amount,
                     'voucher_code' => $order->voucher->code ?? null,
                     'total' => (float)$order->total,
+                    'notes' => $order->notes,
                     'payment_id' => $order->payment_id,
                     'payment_method' => $order->payment_id ? 'Prepaid (Razorpay)' : 'Cash on Delivery',
                     'address' => $order->address ? [
