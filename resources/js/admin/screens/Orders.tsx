@@ -1,6 +1,22 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Order, OrderStatus } from "../../types";
-import { Clock, CheckCircle2, Truck, Package, XCircle, Loader2, ShoppingCart, Phone, MapPin, CreditCard, ExternalLink, ChevronDown, ChevronUp, Eye, X } from "lucide-react";
+import {
+    Clock,
+    CheckCircle2,
+    Truck,
+    Package,
+    XCircle,
+    Loader2,
+    ShoppingCart,
+    Phone,
+    MapPin,
+    CreditCard,
+    ExternalLink,
+    ChevronDown,
+    ChevronUp,
+    Eye,
+    X,
+} from "lucide-react";
 import callApi from "../services";
 import { toast } from "react-toastify";
 
@@ -13,22 +29,28 @@ class AlarmSound {
         const playTone = () => {
             try {
                 if (!this.audioCtx) {
-                    this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+                    this.audioCtx = new (
+                        window.AudioContext ||
+                        (window as any).webkitAudioContext
+                    )();
                 }
-                if (this.audioCtx.state === 'suspended') {
+                if (this.audioCtx.state === "suspended") {
                     this.audioCtx.resume();
                 }
                 const osc = this.audioCtx.createOscillator();
                 const gain = this.audioCtx.createGain();
                 osc.connect(gain);
                 gain.connect(this.audioCtx.destination);
-                
-                osc.type = 'sine';
+
+                osc.type = "sine";
                 osc.frequency.setValueAtTime(880, this.audioCtx.currentTime);
                 gain.gain.setValueAtTime(0.3, this.audioCtx.currentTime);
-                
+
                 osc.start();
-                gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.4);
+                gain.gain.exponentialRampToValueAtTime(
+                    0.01,
+                    this.audioCtx.currentTime + 0.4,
+                );
                 osc.stop(this.audioCtx.currentTime + 0.4);
             } catch (e) {
                 console.error("Web Audio failed:", e);
@@ -57,46 +79,56 @@ export const Orders: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [newOrderAlert, setNewOrderAlert] = useState<Order | null>(null);
-    
+    const [dateFrom, setDateFrom] = useState("");
+    const [dateTo, setDateTo] = useState("");
+
     const knownOrderIds = useRef<Set<string | number>>(new Set());
     const isFirstFetch = useRef(true);
 
     const fetchOrders = async (isPoll = false) => {
         try {
             const data = await callApi("admin/orders");
-            
+
             if (data && data.length > 0) {
                 const currentIds = data.map((o: any) => o.id);
-                
+
                 if (!isFirstFetch.current) {
                     // Check if there is any new order in PENDING status
-                    const newPendingOrder = data.find((o: any) => 
-                        o.status === "PENDING" && !knownOrderIds.current.has(o.id)
+                    const newPendingOrder = data.find(
+                        (o: any) =>
+                            o.status === "PENDING" &&
+                            !knownOrderIds.current.has(o.id),
                     );
-                    
+
                     if (newPendingOrder) {
                         setNewOrderAlert(newPendingOrder);
                         alarm.start();
-                        
+
                         // Trigger HTML5 Web Notification
-                        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-                            const notif = new Notification("New Order Received!", {
-                                body: `Order ${newPendingOrder.order_number || newPendingOrder.id} has been placed by ${newPendingOrder.customerName}.`,
-                                tag: "new-order",
-                                requireInteraction: true
-                            });
+                        if (
+                            typeof Notification !== "undefined" &&
+                            Notification.permission === "granted"
+                        ) {
+                            const notif = new Notification(
+                                "New Order Received!",
+                                {
+                                    body: `Order ${newPendingOrder.order_number || newPendingOrder.id} has been placed by ${newPendingOrder.customerName}.`,
+                                    tag: "new-order",
+                                    requireInteraction: true,
+                                },
+                            );
                             notif.onclick = () => {
                                 window.focus();
                             };
                         }
                     }
                 }
-                
+
                 // Add all IDs to known set
                 currentIds.forEach((id: any) => knownOrderIds.current.add(id));
                 isFirstFetch.current = false;
             }
-            
+
             setOrders(data);
         } catch (error) {
             if (!isPoll) {
@@ -109,7 +141,10 @@ export const Orders: React.FC = () => {
 
     useEffect(() => {
         // Request notification permissions
-        if (typeof Notification !== "undefined" && Notification.permission === "default") {
+        if (
+            typeof Notification !== "undefined" &&
+            Notification.permission === "default"
+        ) {
             Notification.requestPermission();
         }
 
@@ -128,7 +163,7 @@ export const Orders: React.FC = () => {
     const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
         try {
             await callApi(`admin/orders/${orderId}/status`, "POST", {
-                data: { status: newStatus.toLowerCase() }
+                data: { status: newStatus.toLowerCase() },
             });
             setOrders((prev) =>
                 prev.map((o) =>
@@ -173,8 +208,20 @@ export const Orders: React.FC = () => {
         }
     };
 
+    // Filter by date range
+    const filteredOrders = orders.filter((order) => {
+        const orderDate = new Date(order.timestamp);
+        if (dateFrom && orderDate < new Date(dateFrom)) return false;
+        if (dateTo) {
+            const toEnd = new Date(dateTo);
+            toEnd.setHours(23, 59, 59, 999);
+            if (orderDate > toEnd) return false;
+        }
+        return true;
+    });
+
     // Sort orders: Pending first, then by date
-    const sortedOrders = [...orders].sort((a, b) => {
+    const sortedOrders = [...filteredOrders].sort((a, b) => {
         if (
             a.status === OrderStatus.PENDING &&
             b.status !== OrderStatus.PENDING
@@ -194,7 +241,9 @@ export const Orders: React.FC = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-500">
                 <Loader2 className="w-12 h-12 animate-spin mb-4 text-bakery-600" />
-                <p className="text-lg font-medium">Baking your orders data...</p>
+                <p className="text-lg font-medium">
+                    Baking your orders data...
+                </p>
             </div>
         );
     }
@@ -203,11 +252,21 @@ export const Orders: React.FC = () => {
         return (
             <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100 shadow-sm">
                 <ShoppingCart className="w-20 h-20 mx-auto text-gray-100 mb-6" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">No Orders Yet</h2>
-                <p className="text-gray-500 max-w-sm mx-auto">When customers place orders via the app, they will appear here in real-time.</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    No Orders Yet
+                </h2>
+                <p className="text-gray-500 max-w-sm mx-auto">
+                    When customers place orders via the app, they will appear
+                    here in real-time.
+                </p>
             </div>
         );
     }
+
+    const handleClearDates = () => {
+        setDateFrom("");
+        setDateTo("");
+    };
 
     return (
         <div className="space-y-6">
@@ -217,54 +276,150 @@ export const Orders: React.FC = () => {
                 </h1>
             </div>
 
+            {/* Date Filter */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                <div className="flex flex-wrap items-end gap-4">
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-widest font-bold text-gray-400">
+                            From
+                        </label>
+                        <input
+                            type="date"
+                            value={dateFrom}
+                            onChange={(e) => setDateFrom(e.target.value)}
+                            className="px-3 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-bakery-500 focus:border-transparent bg-gray-50"
+                        />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-widest font-bold text-gray-400">
+                            To
+                        </label>
+                        <input
+                            type="date"
+                            value={dateTo}
+                            onChange={(e) => setDateTo(e.target.value)}
+                            className="px-3 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-bakery-500 focus:border-transparent bg-gray-50"
+                        />
+                    </div>
+                    {(dateFrom || dateTo) && (
+                        <button
+                            onClick={handleClearDates}
+                            className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs uppercase tracking-widest transition-all"
+                        >
+                            Clear
+                        </button>
+                    )}
+                    <div className="ml-auto text-xs text-gray-400 font-medium">
+                        Showing {sortedOrders.length} of {orders.length} orders
+                    </div>
+                </div>
+            </div>
+
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Order</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Customer</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Date</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 text-right">Total</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 text-center">Actions</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                    Order
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                    Customer
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                    Status
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                    Notes
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                    Date
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 text-right">
+                                    Total
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 text-center">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {sortedOrders.map((order) => (
-                                <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
+                                <tr
+                                    key={order.id}
+                                    className="hover:bg-gray-50/50 transition-colors group"
+                                >
                                     <td className="px-6 py-4">
                                         <span className="text-xs font-mono font-bold text-bakery-600">
-                                            {order.order_number || `#${String(order.id).slice(0, 8)}`}
+                                            {order.order_number ||
+                                                `#${String(order.id).slice(0, 8)}`}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="font-bold text-gray-900 text-sm">{order.customerName}</span>
-                                            <span className="text-[10px] text-gray-400 font-mono tracking-tight">{order.customerPhone}</span>
+                                            <span className="font-bold text-gray-900 text-sm">
+                                                {order.customerName}
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 font-mono tracking-tight">
+                                                {order.customerPhone}
+                                            </span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStatusColor(order.status)} uppercase tracking-tight`}>
+                                        <div
+                                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStatusColor(order.status)} uppercase tracking-tight`}
+                                        >
                                             {getStatusIcon(order.status)}
                                             {order.status}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
+                                        {order.notes ? (
+                                            <span
+                                                className="text-[11px] text-gray-500 italic line-clamp-1 max-w-[140px] block"
+                                                title={order.notes}
+                                            >
+                                                {order.notes}
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] text-gray-300">
+                                                —
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4">
                                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                                            <Clock size={12} className="text-gray-400" />
-                                            {new Date(order.timestamp).toLocaleDateString()}
-                                            <span className="text-[10px] text-gray-300">|</span>
-                                            <span className="text-[10px]">{new Date(order.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                            <Clock
+                                                size={12}
+                                                className="text-gray-400"
+                                            />
+                                            {new Date(
+                                                order.timestamp,
+                                            ).toLocaleDateString()}
+                                            <span className="text-[10px] text-gray-300">
+                                                |
+                                            </span>
+                                            <span className="text-[10px]">
+                                                {new Date(
+                                                    order.timestamp,
+                                                ).toLocaleTimeString([], {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <span className="text-sm font-black text-gray-900">₹{order.total.toFixed(2)}</span>
+                                        <span className="text-sm font-black text-gray-900">
+                                            ₹{order.total.toFixed(2)}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <div className="flex items-center justify-center gap-2">
-                                            <button 
-                                                onClick={() => setSelectedOrder(order)}
+                                            <button
+                                                onClick={() =>
+                                                    setSelectedOrder(order)
+                                                }
                                                 className="p-1.5 bg-bakery-50 text-bakery-600 rounded-lg hover:bg-bakery-100 transition-colors"
                                                 title="View Details"
                                             >
@@ -287,14 +442,22 @@ export const Orders: React.FC = () => {
                         <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
-                                    <h2 className="text-xl font-black text-gray-900">Order Details</h2>
+                                    <h2 className="text-xl font-black text-gray-900">
+                                        Order Details
+                                    </h2>
                                     <span className="px-2 py-0.5 bg-bakery-100 text-bakery-700 rounded text-[10px] font-bold font-mono">
-                                        {selectedOrder.order_number || `#${String(selectedOrder.id).slice(0, 8)}`}
+                                        {selectedOrder.order_number ||
+                                            `#${String(selectedOrder.id).slice(0, 8)}`}
                                     </span>
                                 </div>
-                                <p className="text-xs text-gray-400">Placed on {new Date(selectedOrder.timestamp).toLocaleString()}</p>
+                                <p className="text-xs text-gray-400">
+                                    Placed on{" "}
+                                    {new Date(
+                                        selectedOrder.timestamp,
+                                    ).toLocaleString()}
+                                </p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setSelectedOrder(null)}
                                 className="p-2 hover:bg-gray-200/50 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
                             >
@@ -309,49 +472,117 @@ export const Orders: React.FC = () => {
                                 <div className="space-y-6">
                                     <section>
                                         <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-3 flex items-center gap-2">
-                                            <ShoppingCart size={12} /> Customer Information
+                                            <ShoppingCart size={12} /> Customer
+                                            Information
                                         </h4>
                                         <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                                            <h3 className="font-bold text-gray-900 text-lg leading-tight mb-1">{selectedOrder.customerName}</h3>
+                                            <h3 className="font-bold text-gray-900 text-lg leading-tight mb-1">
+                                                {selectedOrder.customerName}
+                                            </h3>
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
                                                     <Phone size={14} />
-                                                    <a href={`tel:${selectedOrder.customerPhone}`} className="hover:underline tracking-tight">{selectedOrder.customerPhone}</a>
+                                                    <a
+                                                        href={`tel:${selectedOrder.customerPhone}`}
+                                                        className="hover:underline tracking-tight"
+                                                    >
+                                                        {
+                                                            selectedOrder.customerPhone
+                                                        }
+                                                    </a>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-xs text-gray-500 font-medium lowercase">
                                                     <Eye size={12} />
-                                                    <span>{selectedOrder.customerEmail}</span>
+                                                    <span>
+                                                        {
+                                                            selectedOrder.customerEmail
+                                                        }
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </section>
 
+                                    {selectedOrder.notes && (
+                                        <section>
+                                            <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-3 flex items-center gap-2">
+                                                <ShoppingCart size={12} /> Order
+                                                Notes
+                                            </h4>
+                                            <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-100">
+                                                <p className="text-sm text-gray-700 italic leading-relaxed">
+                                                    {selectedOrder.notes}
+                                                </p>
+                                            </div>
+                                        </section>
+                                    )}
+
                                     {selectedOrder.address && (
                                         <section>
                                             <div className="flex justify-between items-center mb-3">
                                                 <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
-                                                    <MapPin size={12} /> Delivery Address
+                                                    <MapPin size={12} />{" "}
+                                                    Delivery Address
                                                 </h4>
                                                 {selectedOrder.address.lat && (
-                                                    <a 
+                                                    <a
                                                         href={`https://www.google.com/maps?q=${selectedOrder.address.lat},${selectedOrder.address.lng}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         className="text-[10px] text-blue-600 font-bold hover:underline flex items-center gap-1"
                                                     >
-                                                        <ExternalLink size={10} /> Open Map
+                                                        <ExternalLink
+                                                            size={10}
+                                                        />{" "}
+                                                        Open Map
                                                     </a>
                                                 )}
                                             </div>
                                             <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
                                                 <span className="inline-block px-1.5 py-0.5 bg-bakery-100 text-bakery-700 rounded text-[9px] font-bold uppercase mb-2">
-                                                    {selectedOrder.address.label}
+                                                    {
+                                                        selectedOrder.address
+                                                            .label
+                                                    }
                                                 </span>
                                                 <p className="text-sm text-gray-700 leading-relaxed">
-                                                    {selectedOrder.address.address_line1}
-                                                    {selectedOrder.address.address_line2 && <>, {selectedOrder.address.address_line2}</>}
-                                                    {selectedOrder.address.landmark && <span className="block italic text-xs text-gray-500 mt-1">Near: {selectedOrder.address.landmark}</span>}
-                                                    <span className="font-bold block mt-1">{selectedOrder.address.city} - {selectedOrder.address.pincode}</span>
+                                                    {
+                                                        selectedOrder.address
+                                                            .address_line1
+                                                    }
+                                                    {selectedOrder.address
+                                                        .address_line2 && (
+                                                        <>
+                                                            ,{" "}
+                                                            {
+                                                                selectedOrder
+                                                                    .address
+                                                                    .address_line2
+                                                            }
+                                                        </>
+                                                    )}
+                                                    {selectedOrder.address
+                                                        .landmark && (
+                                                        <span className="block italic text-xs text-gray-500 mt-1">
+                                                            Near:{" "}
+                                                            {
+                                                                selectedOrder
+                                                                    .address
+                                                                    .landmark
+                                                            }
+                                                        </span>
+                                                    )}
+                                                    <span className="font-bold block mt-1">
+                                                        {
+                                                            selectedOrder
+                                                                .address.city
+                                                        }{" "}
+                                                        -{" "}
+                                                        {
+                                                            selectedOrder
+                                                                .address.pincode
+                                                        }
+                                                    </span>
                                                 </p>
                                             </div>
                                         </section>
@@ -360,11 +591,16 @@ export const Orders: React.FC = () => {
                                     {selectedOrder.payment_id && (
                                         <section>
                                             <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-3 flex items-center gap-2">
-                                                <CreditCard size={12} /> Payment Detail
+                                                <CreditCard size={12} /> Payment
+                                                Detail
                                             </h4>
                                             <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
-                                                <p className="text-[10px] text-blue-400 font-bold uppercase mb-1">Razorpay Payment ID</p>
-                                                <code className="text-xs font-mono font-bold text-blue-700 block break-all">{selectedOrder.payment_id}</code>
+                                                <p className="text-[10px] text-blue-400 font-bold uppercase mb-1">
+                                                    Razorpay Payment ID
+                                                </p>
+                                                <code className="text-xs font-mono font-bold text-blue-700 block break-all">
+                                                    {selectedOrder.payment_id}
+                                                </code>
                                             </div>
                                         </section>
                                     )}
@@ -378,36 +614,72 @@ export const Orders: React.FC = () => {
                                         </h4>
                                         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                                             <div className="p-4 space-y-3">
-                                                {selectedOrder.items.map((item, idx) => (
-                                                    <div key={idx} className="flex justify-between items-start gap-4">
-                                                        <div className="flex gap-2 min-w-0">
-                                                            <span className="font-bold text-bakery-600 bg-bakery-50 px-1.5 py-0.5 rounded text-xs h-fit">
-                                                                {item.quantity}x
+                                                {selectedOrder.items.map(
+                                                    (item, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className="flex justify-between items-start gap-4"
+                                                        >
+                                                            <div className="flex gap-2 min-w-0">
+                                                                <span className="font-bold text-bakery-600 bg-bakery-50 px-1.5 py-0.5 rounded text-xs h-fit">
+                                                                    {
+                                                                        item.quantity
+                                                                    }
+                                                                    x
+                                                                </span>
+                                                                <span className="text-gray-700 font-medium truncate">
+                                                                    {item.name}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-gray-400 font-mono text-xs whitespace-nowrap">
+                                                                ₹
+                                                                {(
+                                                                    item.price *
+                                                                    item.quantity
+                                                                ).toFixed(2)}
                                                             </span>
-                                                            <span className="text-gray-700 font-medium truncate">{item.name}</span>
                                                         </div>
-                                                        <span className="text-gray-400 font-mono text-xs whitespace-nowrap">₹{(item.price * item.quantity).toFixed(2)}</span>
-                                                    </div>
-                                                ))}
+                                                    ),
+                                                )}
                                             </div>
                                             <div className="bg-gray-50 p-4 border-t border-gray-100 space-y-2">
                                                 <div className="flex justify-between text-xs text-gray-500">
                                                     <span>Subtotal</span>
-                                                    <span className="font-mono">₹{selectedOrder.subtotal.toFixed(2)}</span>
+                                                    <span className="font-mono">
+                                                        ₹
+                                                        {selectedOrder.subtotal.toFixed(
+                                                            2,
+                                                        )}
+                                                    </span>
                                                 </div>
                                                 <div className="flex justify-between text-xs text-gray-500">
                                                     <span>Delivery Fee</span>
-                                                    <span className="font-mono">₹{selectedOrder.delivery_fee.toFixed(2)}</span>
+                                                    <span className="font-mono">
+                                                        ₹
+                                                        {selectedOrder.delivery_fee.toFixed(
+                                                            2,
+                                                        )}
+                                                    </span>
                                                 </div>
                                                 <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-black text-gray-900 text-base">Total</span>
+                                                        <span className="font-black text-gray-900 text-base">
+                                                            Total
+                                                        </span>
                                                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold uppercase ring-1 ring-blue-100">
-                                                            <CreditCard size={10} />
-                                                            {selectedOrder.payment_method || 'CASH'}
+                                                            <CreditCard
+                                                                size={10}
+                                                            />
+                                                            {selectedOrder.payment_method ||
+                                                                "CASH"}
                                                         </span>
                                                     </div>
-                                                    <span className="font-black text-bakery-600 text-lg">₹{selectedOrder.total.toFixed(2)}</span>
+                                                    <span className="font-black text-bakery-600 text-lg">
+                                                        ₹
+                                                        {selectedOrder.total.toFixed(
+                                                            2,
+                                                        )}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -419,11 +691,15 @@ export const Orders: React.FC = () => {
                         {/* Modal Footer: Actions */}
                         <div className="px-8 py-6 bg-white border-t border-gray-100">
                             <div className="flex flex-col sm:flex-row gap-3">
-                                {selectedOrder.status === OrderStatus.PENDING && (
+                                {selectedOrder.status ===
+                                    OrderStatus.PENDING && (
                                     <>
                                         <button
                                             onClick={() => {
-                                                updateStatus(String(selectedOrder.id), OrderStatus.CANCELLED);
+                                                updateStatus(
+                                                    String(selectedOrder.id),
+                                                    OrderStatus.CANCELLED,
+                                                );
                                                 setSelectedOrder(null);
                                             }}
                                             className="flex-1 py-3 px-6 rounded-2xl border-2 border-red-50 text-red-500 hover:bg-red-50 font-black text-xs uppercase tracking-widest transition-all"
@@ -432,7 +708,10 @@ export const Orders: React.FC = () => {
                                         </button>
                                         <button
                                             onClick={() => {
-                                                updateStatus(String(selectedOrder.id), OrderStatus.PREPARING);
+                                                updateStatus(
+                                                    String(selectedOrder.id),
+                                                    OrderStatus.PREPARING,
+                                                );
                                                 setSelectedOrder(null);
                                             }}
                                             className="flex-1 py-3 px-6 rounded-2xl bg-bakery-600 text-white hover:bg-bakery-700 font-black text-xs uppercase tracking-widest shadow-xl shadow-bakery-100 transition-all hover:-translate-y-0.5 active:translate-y-0"
@@ -441,10 +720,14 @@ export const Orders: React.FC = () => {
                                         </button>
                                     </>
                                 )}
-                                {selectedOrder.status === OrderStatus.PREPARING && (
+                                {selectedOrder.status ===
+                                    OrderStatus.PREPARING && (
                                     <button
                                         onClick={() => {
-                                            updateStatus(String(selectedOrder.id), OrderStatus.READY);
+                                            updateStatus(
+                                                String(selectedOrder.id),
+                                                OrderStatus.READY,
+                                            );
                                             setSelectedOrder(null);
                                         }}
                                         className="w-full py-4 px-6 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-100 transition-all hover:-translate-y-0.5"
@@ -455,7 +738,10 @@ export const Orders: React.FC = () => {
                                 {selectedOrder.status === OrderStatus.READY && (
                                     <button
                                         onClick={() => {
-                                            updateStatus(String(selectedOrder.id), OrderStatus.DELIVERED);
+                                            updateStatus(
+                                                String(selectedOrder.id),
+                                                OrderStatus.DELIVERED,
+                                            );
                                             setSelectedOrder(null);
                                         }}
                                         className="w-full py-4 px-6 rounded-2xl bg-green-600 text-white hover:bg-green-700 font-black text-xs uppercase tracking-widest shadow-xl shadow-green-100 transition-all hover:-translate-y-0.5"
@@ -463,13 +749,22 @@ export const Orders: React.FC = () => {
                                         Handover / Complete Delivery
                                     </button>
                                 )}
-                                {(selectedOrder.status === OrderStatus.DELIVERED || selectedOrder.status === OrderStatus.CANCELLED) && (
+                                {(selectedOrder.status ===
+                                    OrderStatus.DELIVERED ||
+                                    selectedOrder.status ===
+                                        OrderStatus.CANCELLED) && (
                                     <button
                                         disabled
                                         className="w-full py-4 px-6 rounded-2xl bg-gray-50 text-gray-400 border border-gray-100 font-black text-xs uppercase tracking-widest opacity-60 flex items-center justify-center gap-2"
                                     >
-                                        {selectedOrder.status === OrderStatus.DELIVERED ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                                        Order {selectedOrder.status.toLowerCase()}
+                                        {selectedOrder.status ===
+                                        OrderStatus.DELIVERED ? (
+                                            <CheckCircle2 size={16} />
+                                        ) : (
+                                            <XCircle size={16} />
+                                        )}
+                                        Order{" "}
+                                        {selectedOrder.status.toLowerCase()}
                                     </button>
                                 )}
                             </div>
@@ -489,13 +784,21 @@ export const Orders: React.FC = () => {
                             🔔 NEW ORDER RECEIVED!
                         </h2>
                         <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                            Order Number: <strong className="text-bakery-600 font-mono">{newOrderAlert.order_number || `#${newOrderAlert.id}`}</strong>
+                            Order Number:{" "}
+                            <strong className="text-bakery-600 font-mono">
+                                {newOrderAlert.order_number ||
+                                    `#${newOrderAlert.id}`}
+                            </strong>
                             <br />
-                            Customer: <strong>{newOrderAlert.customerName}</strong>
+                            Customer:{" "}
+                            <strong>{newOrderAlert.customerName}</strong>
                             <br />
-                            Total: <strong className="text-gray-900">₹{newOrderAlert.total.toFixed(2)}</strong>
+                            Total:{" "}
+                            <strong className="text-gray-900">
+                                ₹{newOrderAlert.total.toFixed(2)}
+                            </strong>
                         </p>
-                        
+
                         <div className="flex gap-4">
                             <button
                                 onClick={() => {

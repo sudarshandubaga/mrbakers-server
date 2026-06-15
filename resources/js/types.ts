@@ -79,6 +79,7 @@ export interface Order {
     total: number;
     status: OrderStatus;
     timestamp: string;
+    notes?: string;
     payment_method?: string;
     payment_id?: string;
     address?: {
