@@ -51,7 +51,7 @@ class OrderController extends Controller
 
         try {
             return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $user, $orderNumber, $items) {
-                $order = Order::create([
+                $orderData = [
                     'user_id' => $user->id,
                     'order_number' => $orderNumber,
                     'subtotal' => $request->subtotal,
@@ -62,8 +62,11 @@ class OrderController extends Controller
                     'status' => 'Confirmed',
                     'payment_id' => $request->paymentId,
                     'address_id' => $request->address_id,
-                    'notes' => $request->notes
-                ]);
+                ];
+                if ($request->filled('notes')) {
+                    $orderData['notes'] = $request->notes;
+                }
+                $order = Order::create($orderData);
 
                 if ($request->voucher_id) {
                     \App\Models\Voucher::where('id', $request->voucher_id)->increment('usage_count');
@@ -118,7 +121,7 @@ class OrderController extends Controller
                 'deliveryFee' => $order->delivery_fee,
                 'discountAmount' => $order->discount_amount,
                 'status' => $order->status,
-                'notes' => $order->notes,
+                'notes' => $order->notes ?? '',
                 'items' => $order->items->map(function ($item) {
                     return [
                         'name' => $item->product_name,
