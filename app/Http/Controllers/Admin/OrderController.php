@@ -21,8 +21,14 @@ class OrderController extends Controller
                 $s = trim(strtolower($s));
                 if ($s === 'pending') {
                     $dbStatuses[] = 'Confirmed';
+                } elseif ($s === 'accepted') {
+                    $dbStatuses[] = 'Accepted';
                 } elseif ($s === 'processing') {
                     $dbStatuses[] = 'Processing';
+                } elseif ($s === 'completed') {
+                    $dbStatuses[] = 'Completed';
+                } elseif ($s === 'cancelled') {
+                    $dbStatuses[] = 'Cancelled';
                 } else {
                     $dbStatuses[] = ucfirst($s);
                 }
@@ -33,6 +39,16 @@ class OrderController extends Controller
         $orders = $query->orderBy('id', 'desc')
             ->get()
             ->map(function ($order) {
+                $status = strtolower($order->status);
+                $displayStatus = match ($status) {
+                    'confirmed' => 'PENDING',
+                    'accepted' => 'ACCEPTED',
+                    'processing' => 'PROCESSING',
+                    'completed' => 'COMPLETED',
+                    'cancelled' => 'CANCELLED',
+                    default => strtoupper($order->status),
+                };
+
                 return [
                     'id' => $order->id,
                     'order_number' => $order->order_number,
@@ -40,7 +56,7 @@ class OrderController extends Controller
                     'customerEmail' => $order->user->email ?? 'N/A',
                     'customerPhone' => $order->user->phone ?? 'N/A',
                     'timestamp' => $order->created_at->toISOString(),
-                    'status' => strtolower($order->status) === 'confirmed' ? 'PENDING' : strtoupper($order->status),
+                    'status' => $displayStatus,
                     'subtotal' => (float)$order->subtotal,
                     'delivery_fee' => (float)$order->delivery_fee,
                     'discount_amount' => (float)$order->discount_amount,
@@ -75,9 +91,24 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $order = Order::findOrFail($id);
-        $order->status = $request->status;
+
+        // Map incoming status values to database values
+        $status = strtolower($request->status);
+        $dbStatus = match ($status) {
+            'pending' => 'Confirmed',
+            'accepted' => 'Accepted',
+            'processing' => 'Processing',
+            'completed' => 'Completed',
+            'cancelled' => 'Cancelled',
+            default => ucfirst($status),
+        };
+
+        $order->status = $dbStatus;
         $order->save();
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'status' => $dbStatus,
+        ]);
     }
 }
