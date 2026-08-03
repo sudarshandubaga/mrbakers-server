@@ -20,6 +20,8 @@ Route::post("/login", [LoginController::class, 'doLogin']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     // Admin Routes
     Route::group(['prefix' => 'admin'], function () {
+        Route::post('/product/{id}/stock-status', [ProductController::class, 'toggleStockStatus']);
+
         Route::apiResources([
             'category' => CategoryController::class,
             'product' => ProductController::class,

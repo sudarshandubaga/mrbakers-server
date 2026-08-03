@@ -253,4 +253,26 @@ class ProductController extends Controller
             "message" => "Product deleted successfully"
         ]);
     }
+
+    /**
+     * POST /products/{id}/stock-status
+     */
+    public function toggleStockStatus(Request $request, $id)
+    {
+        $request->validate([
+            "is_in_stock" => "required|boolean",
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        $product->update([
+            "is_in_stock" => $request->boolean('is_in_stock'),
+        ]);
+
+        return response()->json([
+            "status"  => true,
+            "message" => "Stock status updated successfully",
+            "data"    => $product->load(['variants', 'category'])
+        ]);
+    }
 }
