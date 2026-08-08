@@ -65,16 +65,16 @@ class OrderController extends Controller
                     'notes' => $order->notes,
                     'payment_id' => $order->payment_id,
                     'payment_method' => $order->payment_id ? 'Prepaid (Razorpay)' : 'Cash on Delivery',
-                    'address' => $order->address ? [
-                        'label' => $order->address->label,
-                        'address_line1' => $order->address->address_line1,
-                        'address_line2' => $order->address->address_line2,
-                        'landmark' => $order->address->landmark,
-                        'city' => $order->address->city,
-                        'pincode' => $order->address->pincode,
-                        'lat' => $order->address->latitude,
-                        'lng' => $order->address->longitude,
-                    ] : null,
+                    'address' => $order->address
+                        ? implode(', ', array_filter([
+                            $order->address->label,
+                            $order->address->address_line1,
+                            $order->address->address_line2,
+                            $order->address->landmark,
+                            $order->address->city,
+                            $order->address->pincode,
+                        ]))
+                        : null,
                     'items' => $order->items->map(function ($item) {
                         return [
                             'name' => $item->product_name . ($item->variant_name ? " ($item->variant_name)" : ""),

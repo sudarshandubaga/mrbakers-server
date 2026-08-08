@@ -41,15 +41,39 @@ class FcmService
             }
 
             $customerName = $order->user->name ?? 'Guest';
+
+            // Load items and address eagerly for the notification payload
+            $order->load(['items', 'address']);
+
             $title = '🔔 New Order Received!';
             $body = "Order " . ($order->order_number ?: $order->id) . " placed by " . $customerName . " for ₹" . $order->total . ".";
+
+            // Build customer address from the order's address relation
+            $customerAddress = $order->address ? implode(', ', array_filter([
+                $order->address->address_line1,
+                $order->address->address_line2,
+                $order->address->landmark,
+                trim(($order->address->city ?? '') . ' - ' . ($order->address->pincode ?? ''), ' -'),
+            ])) : '';
+
+            // Build items summary array
+            $itemsPayload = $order->items->map(function ($item) {
+                return [
+                    'name' => $item->product_name . ($item->variant_name ? " ($item->variant_name)" : ""),
+                    'quantity' => (int)$item->qty,
+                    'price' => (float)$item->price,
+                ];
+            })->values()->toArray();
 
             $dataPayload = [
                 'order_id' => (string) $order->id,
                 'order_number' => (string) ($order->order_number ?: ''),
                 'customerName' => (string) $customerName,
+                'customerPhone' => (string) ($order->user->phone ?? ''),
+                'customerAddress' => (string) $customerAddress,
                 'total' => (string) $order->total,
                 'status' => (string) $order->status,
+                'items' => json_encode($itemsPayload),
                 'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
             ];
 
