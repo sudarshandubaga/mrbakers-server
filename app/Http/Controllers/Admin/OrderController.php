@@ -111,4 +111,70 @@ class OrderController extends Controller
             'status' => $dbStatus,
         ]);
     }
+
+    public function show($id)
+    {
+        $order = Order::with(['items', 'user', 'address', 'voucher'])
+            ->findOrFail($id);
+
+        $status = strtolower($order->status);
+
+        $displayStatus = match ($status) {
+            'confirmed' => 'PENDING',
+            'accepted' => 'ACCEPTED',
+            'processing' => 'PROCESSING',
+            'completed' => 'COMPLETED',
+            'cancelled' => 'CANCELLED',
+            default => strtoupper($order->status),
+        };
+
+        return response()->json([
+            'id' => $order->id,
+            'order_number' => $order->order_number,
+
+            'customerName' => trim(
+                ($order->user->first_name ?? '') . ' ' .
+                    ($order->user->last_name ?? '')
+            ),
+            'customerEmail' => $order->user->email ?? 'N/A',
+            'customerPhone' => $order->user->phone ?? 'N/A',
+
+            'timestamp' => $order->created_at?->toISOString(),
+            'status' => $displayStatus,
+
+            'subtotal' => (float) $order->subtotal,
+            'delivery_fee' => (float) $order->delivery_fee,
+            'discount_amount' => (float) $order->discount_amount,
+            'voucher_code' => $order->voucher->code ?? null,
+            'total' => (float) $order->total,
+
+            'notes' => $order->notes,
+            'payment_id' => $order->payment_id,
+            'payment_method' => $order->payment_id
+                ? 'Prepaid (Razorpay)'
+                : 'Cash on Delivery',
+
+            'address' => $order->address
+                ? implode(', ', array_filter([
+                    $order->address->label,
+                    $order->address->address_line1,
+                    $order->address->address_line2,
+                    $order->address->landmark,
+                    $order->address->city,
+                    $order->address->pincode,
+                ]))
+                : null,
+
+            'items' => $order->items->map(function ($item) {
+                return [
+                    'name' => $item->product_name .
+                        ($item->variant_name
+                            ? " ({$item->variant_name})"
+                            : ''),
+                    'quantity' => (int) $item->qty,
+                    'price' => (float) $item->price,
+                ];
+            })->values(),
+        ]);
+    }
 }
