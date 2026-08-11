@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Save, Loader2, Store, Smartphone, Mail, Phone, FileText, Clock } from "lucide-react";
+import { Save, Loader2, Store, Smartphone, Mail, Phone, FileText, Clock, ShoppingCart } from "lucide-react";
 import callApi from "../services";
 import { toast } from "react-toastify";
 
@@ -18,6 +18,8 @@ export const AppSettings: React.FC = () => {
         order_from_time: "",
         order_to_time: "",
         order_disabled_message: "",
+        min_cart_total: "",
+        delivery_charges_upto_min_cart_total: "",
     });
 
     const fetchSettings = async () => {
@@ -36,6 +38,9 @@ export const AppSettings: React.FC = () => {
                     order_from_time: data.order_from_time || "",
                     order_to_time: data.order_to_time || "",
                     order_disabled_message: data.order_disabled_message || "",
+                    min_cart_total: data.min_cart_total || "",
+                    delivery_charges_upto_min_cart_total:
+                        data.delivery_charges_upto_min_cart_total || "",
                 });
             }
         } catch (error) {
@@ -225,6 +230,53 @@ export const AppSettings: React.FC = () => {
                                 }
                                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
                                 placeholder="e.g. Sorry, we are currently not accepting orders."
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Cart & Delivery Settings */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                        <ShoppingCart className="text-bakery-600" size={20} />
+                        <h2 className="font-semibold text-gray-900">
+                            Cart & Delivery Charges
+                        </h2>
+                    </div>
+                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Min Cart Total
+                            </label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={settings.min_cart_total}
+                                onChange={(e) =>
+                                    handleChange("min_cart_total", e.target.value)
+                                }
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                                placeholder="e.g. 200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Delivery Charges upto Min Cart Total
+                            </label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={settings.delivery_charges_upto_min_cart_total}
+                                onChange={(e) =>
+                                    handleChange(
+                                        "delivery_charges_upto_min_cart_total",
+                                        e.target.value,
+                                    )
+                                }
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-bakery-500/20 focus:border-bakery-500 outline-none"
+                                placeholder="e.g. 50"
                             />
                         </div>
                     </div>

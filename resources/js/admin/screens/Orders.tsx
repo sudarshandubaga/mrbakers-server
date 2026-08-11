@@ -12,8 +12,6 @@ import {
     MapPin,
     CreditCard,
     ExternalLink,
-    ChevronDown,
-    ChevronUp,
     Eye,
     X,
 } from "lucide-react";
@@ -79,8 +77,11 @@ export const Orders: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [newOrderAlert, setNewOrderAlert] = useState<Order | null>(null);
-    const [dateFrom, setDateFrom] = useState("");
-    const [dateTo, setDateTo] = useState("");
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const [dateFrom, setDateFrom] = useState(today);
+    const [dateTo, setDateTo] = useState(today);
 
     const knownOrderIds = useRef<Set<string | number>>(new Set());
     const isFirstFetch = useRef(true);
@@ -264,8 +265,9 @@ export const Orders: React.FC = () => {
     }
 
     const handleClearDates = () => {
-        setDateFrom("");
-        setDateTo("");
+        const today = new Date().toISOString().split("T")[0];
+        setDateFrom(today);
+        setDateTo(today);
     };
 
     return (
@@ -333,6 +335,9 @@ export const Orders: React.FC = () => {
                                     Notes
                                 </th>
                                 <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                    Address
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                                     Date
                                 </th>
                                 <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 text-right">
@@ -380,6 +385,20 @@ export const Orders: React.FC = () => {
                                                 title={order.notes}
                                             >
                                                 {order.notes}
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] text-gray-300">
+                                                —
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {order.address ? (
+                                            <span
+                                                className="text-[11px] text-gray-500 italic line-clamp-1 max-w-[140px] block"
+                                                title={order.address}
+                                            >
+                                                {order.address}
                                             </span>
                                         ) : (
                                             <span className="text-[10px] text-gray-300">
@@ -540,50 +559,8 @@ export const Orders: React.FC = () => {
                                             </div>
                                             <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
                                                 <span className="inline-block px-1.5 py-0.5 bg-bakery-100 text-bakery-700 rounded text-[9px] font-bold uppercase mb-2">
-                                                    {
-                                                        selectedOrder.address
-                                                            .label
-                                                    }
+                                                    {selectedOrder?.address}
                                                 </span>
-                                                <p className="text-sm text-gray-700 leading-relaxed">
-                                                    {
-                                                        selectedOrder.address
-                                                            .address_line1
-                                                    }
-                                                    {selectedOrder.address
-                                                        .address_line2 && (
-                                                        <>
-                                                            ,{" "}
-                                                            {
-                                                                selectedOrder
-                                                                    .address
-                                                                    .address_line2
-                                                            }
-                                                        </>
-                                                    )}
-                                                    {selectedOrder.address
-                                                        .landmark && (
-                                                        <span className="block italic text-xs text-gray-500 mt-1">
-                                                            Near:{" "}
-                                                            {
-                                                                selectedOrder
-                                                                    .address
-                                                                    .landmark
-                                                            }
-                                                        </span>
-                                                    )}
-                                                    <span className="font-bold block mt-1">
-                                                        {
-                                                            selectedOrder
-                                                                .address.city
-                                                        }{" "}
-                                                        -{" "}
-                                                        {
-                                                            selectedOrder
-                                                                .address.pincode
-                                                        }
-                                                    </span>
-                                                </p>
                                             </div>
                                         </section>
                                     )}

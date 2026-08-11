@@ -82,16 +82,7 @@ export interface Order {
     notes?: string;
     payment_method?: string;
     payment_id?: string;
-    address?: {
-        label: string;
-        address_line1: string;
-        address_line2?: string;
-        landmark?: string;
-        city: string;
-        pincode: string;
-        lat?: number | string;
-        lng?: number | string;
-    };
+    address?: string;
 }
 
 export interface SalesData {

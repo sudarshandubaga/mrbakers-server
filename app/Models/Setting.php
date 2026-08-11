@@ -17,6 +17,8 @@ class Setting extends Model
         'disclaimer',
         'order_from_time',
         'order_to_time',
-        'order_disabled_message'
+        'order_disabled_message',
+        'min_cart_total',
+        'delivery_charges_upto_min_cart_total'
     ];
 }

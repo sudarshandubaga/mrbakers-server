@@ -16,7 +16,9 @@ class AppSettingController extends Controller
                 'store_name' => 'Mr Bakers',
                 'app_version' => '1.0.0',
                 'email' => 'contact@mrbakersjodhpur.in',
-                'phone' => '+91 92146 88000'
+                'phone' => '+91 92146 88000',
+                'min_cart_total' => null,
+                'delivery_charges_upto_min_cart_total' => null
             ]);
         }
 
@@ -41,6 +43,8 @@ class AppSettingController extends Controller
         $settings->order_from_time = $request->order_from_time;
         $settings->order_to_time = $request->order_to_time;
         $settings->order_disabled_message = $request->order_disabled_message;
+        $settings->min_cart_total = $request->min_cart_total;
+        $settings->delivery_charges_upto_min_cart_total = $request->delivery_charges_upto_min_cart_total;
         $settings->save();
 
         return response()->json(['success' => true, 'settings' => $settings]);
